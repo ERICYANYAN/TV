@@ -142,6 +142,12 @@ public class CustomTabLayout extends HorizontalScrollView {
         }
     }
 
+    public String getCurrentTabName() {
+        // 获取当前选中的tab的名称，需要把 view 转换为 TextView
+        TextView textView = (TextView) container.getChildAt(selectedPosition);
+        return textView.getText().toString();
+    }
+
     public interface OnTabSelectedListener {
         void onTabSelected(int position);
     }

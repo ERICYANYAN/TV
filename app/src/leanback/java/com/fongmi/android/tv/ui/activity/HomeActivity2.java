@@ -52,11 +52,13 @@ import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.player.Source;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
+import com.fongmi.android.tv.ui.custom.CustomTabLayout;
 import com.fongmi.android.tv.ui.custom.CustomTitleView;
 import com.fongmi.android.tv.ui.dialog.HistoryDialog;
 import com.fongmi.android.tv.ui.dialog.MenuDialog;
 import com.fongmi.android.tv.ui.dialog.SiteDialog;
 import com.fongmi.android.tv.ui.fragment.HomeFragment;
+import com.fongmi.android.tv.ui.fragment.TestFragment;
 import com.fongmi.android.tv.ui.fragment.VodFragment;
 import com.fongmi.android.tv.ui.presenter.TypePresenter;
 import com.fongmi.android.tv.utils.FileChooser;
@@ -80,14 +82,8 @@ import java.util.Map;
 public class HomeActivity2 extends BaseActivity {
 
     public ActivityHome2Binding mBinding;
-    private ArrayObjectAdapter mAdapter;
-    private SiteViewModel mViewModel;
-    public Result mResult;
-    private boolean loading;
-    private boolean coolDown;
-    private View mOldView;
-    private boolean confirm;
-    private View mFocus;
+    private CustomTabLayout mTabLayout;
+    private TestFragment mTestFragment;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, HomeActivity2.class));
@@ -103,9 +99,26 @@ public class HomeActivity2 extends BaseActivity {
         DLNARendererService.Companion.start(this, R.drawable.ic_logo);
         Server.get().start();
         Tbs.init();
-//      设置左上角标题
+        
+        // 初始化 TabLayout
+        mTabLayout = mBinding.tabLayout;
+        mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
+        mTabLayout.setCurrentTab(1); // 默认选中"推荐"
+        
+
+        
     }
 
-
+    @Override
+    protected void initEvent() {
+        mTabLayout.setOnTabSelectedListener(position -> {
+            // 每次切换 tab 都重新加载 TestFragment
+            mTestFragment = TestFragment.newInstance(mTabLayout.getCurrentTabName());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, mTestFragment)
+                    .commit();
+        });
+    }
 
 }
