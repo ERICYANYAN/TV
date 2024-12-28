@@ -36,16 +36,13 @@ public class OKHomeActivity extends BaseActivity {
         Tbs.init();
         
         // 初始化 TabLayout
-        mTabLayout = mBinding.tabLayout;
-        mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
-        mTabLayout.setCurrentTab(1); // 默认选中"推荐"
-        
+        initTabLayout();
 
-        
     }
 
-    @Override
-    protected void initEvent() {
+    private void initTabLayout() {
+        mTabLayout = mBinding.tabLayout;
+        mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
         mTabLayout.setOnTabSelectedListener(position -> {
             // 每次切换 tab 都重新加载 TestFragment
             mOKTestFragment = OKTestFragment.newInstance(mTabLayout.getCurrentTabName());
@@ -54,6 +51,8 @@ public class OKHomeActivity extends BaseActivity {
                     .replace(R.id.container, mOKTestFragment)
                     .commit();
         });
+        mTabLayout.setCurrentTab(1); // 默认选中"推荐"
     }
+
 
 }
