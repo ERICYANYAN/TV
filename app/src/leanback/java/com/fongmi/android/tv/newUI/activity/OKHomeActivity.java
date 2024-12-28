@@ -13,7 +13,6 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.model.SiteViewModel;
-import com.fongmi.android.tv.newUI.fragment.O;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;

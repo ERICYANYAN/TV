@@ -37,7 +37,7 @@ import java.util.List;
 
 
 // 我的页面Fragment，包含历史记录和推荐内容
-public class O extends BaseFragment implements VodPresenter.OnClickListener, HistoryPresenter.OnClickListener {
+public class OKRecommendFragment extends BaseFragment implements VodPresenter.OnClickListener, HistoryPresenter.OnClickListener {
 
     // 布局绑定
     public FragmentHomeBinding mBinding;
@@ -51,8 +51,8 @@ public class O extends BaseFragment implements VodPresenter.OnClickListener, His
     public Result mResult;
 
     // 创建Fragment实例，传入API结果数据
-    public static O newInstance(Result mResult) {
-        O fragment =  new O();
+    public static OKRecommendFragment newInstance(Result mResult) {
+        OKRecommendFragment fragment =  new OKRecommendFragment();
         fragment.mResult = mResult;
         return  fragment;
     }
