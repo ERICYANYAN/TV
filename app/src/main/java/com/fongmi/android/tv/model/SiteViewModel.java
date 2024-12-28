@@ -40,17 +40,19 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Call;
 import okhttp3.Response;
 
+// 视图模型类，用于管理站点相关的数据和业务逻辑
 public class SiteViewModel extends ViewModel {
 
-    public MutableLiveData<Episode> ep;
-    public MutableLiveData<Episode> episode;
-    public MutableLiveData<Result> result;
-    public MutableLiveData<Result> player;
-    public MutableLiveData<Result> search;
-    public MutableLiveData<Result> action;
-    public MutableLiveData<Danmu> danmaku;
-    public MutableLiveData<Result> download;
-    private ExecutorService executor;
+    // LiveData 用于观察数据变化
+    public MutableLiveData<Episode> ep;           // 用于下载的剧集
+    public MutableLiveData<Episode> episode;      // 当前播放的剧集
+    public MutableLiveData<Result> result;        // 首页内容/分类内容的结果
+    public MutableLiveData<Result> player;        // 播放器相关的结果
+    public MutableLiveData<Result> search;        // 搜索结果
+    public MutableLiveData<Result> action;        // 动作执行结果
+    public MutableLiveData<Danmu> danmaku;       // 弹幕数据
+    public MutableLiveData<Result> download;      // 下载相关的结果
+    private ExecutorService executor;             // 线程池执行器
 
     public SiteViewModel() {
         this.ep = new MutableLiveData<>();
@@ -70,10 +72,13 @@ public class SiteViewModel extends ViewModel {
         ep.setValue(value);
     }
 
+    // 获取首页内容
     public void homeContent() {
         execute(result, () -> {
             Site site = VodConfig.get().getHome();
+            // 根据站点类型处理
             if (site.getType() == 3) {
+                // 类型3：使用爬虫方式
                 Spider spider = site.recent().spider();
                 String homeContent = spider.homeContent(true);
                 SpiderDebug.log(homeContent);
@@ -84,12 +89,14 @@ public class SiteViewModel extends ViewModel {
                 result.setList(Result.fromJson(homeVideoContent).getList());
                 return result;
             } else if (site.getType() == 4) {
+                // 类型4：使用过滤器方式
                 ArrayMap<String, String> params = new ArrayMap<>();
                 params.put("filter", "true");
                 String homeContent = call(site, params, false);
                 SpiderDebug.log(homeContent);
                 return Result.fromJson(homeContent);
             } else {
+                // 其他类型：直接调用API
                 String homeContent = OkHttp.newCall(site.getApi(), site.getHeaders()).execute().body().string();
                 SpiderDebug.log(homeContent);
                 return fetchPic(site, Result.fromType(site.getType(), homeContent));
@@ -97,6 +104,7 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // 获取分类内容
     public void categoryContent(String key, String tid, String page, boolean filter, HashMap<String, String> extend) {
         execute(result, () -> {
             Site site = VodConfig.get().getSite(key);
@@ -119,6 +127,7 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // 获取详情内容
     public void detailContent(String key, String id) {
         execute(result, () -> {
             Site site = VodConfig.get().getSite(key);
@@ -152,6 +161,7 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // 处理播放器内容
     private void executePlayer(MutableLiveData<Result> data, String key, String flag, String id) {
         execute(data, () -> {
             Source.get().stop();
@@ -218,6 +228,7 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // 搜索内容
     public void searchContent(Site site, String keyword, boolean quick) throws Throwable {
         if (site.getType() == 3) {
             String searchContent = site.spider().searchContent(Trans.t2s(keyword), quick);
@@ -254,8 +265,12 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // 工具方法：调用API
     private String call(Site site, ArrayMap<String, String> params, boolean limit) throws IOException {
-        Call call = fetchExt(site, params, limit).length() <= 1000 ? OkHttp.newCall(site.getApi(), site.getHeaders(), params) : OkHttp.newCall(site.getApi(), site.getHeaders(), OkHttp.toBody(params));
+        // 根据参数长度决定使用GET还是POST请求
+        Call call = fetchExt(site, params, limit).length() <= 1000 
+            ? OkHttp.newCall(site.getApi(), site.getHeaders(), params) 
+            : OkHttp.newCall(site.getApi(), site.getHeaders(), OkHttp.toBody(params));
         return call.execute().body().string();
     }
 
@@ -294,14 +309,17 @@ public class SiteViewModel extends ViewModel {
         this.search.postValue(result);
     }
 
+    // 异步执行任务的通用方法
     private void execute(MutableLiveData<Result> result, Callable<Result> callable) {
         if (executor != null) executor.shutdownNow();
         executor = Executors.newFixedThreadPool(2);
         executor.execute(() -> {
             try {
                 if (Thread.interrupted()) return;
+                // 设置超时时间执行任务
                 result.postValue(executor.submit(callable).get(Constant.TIMEOUT_VOD, TimeUnit.MILLISECONDS));
             } catch (Throwable e) {
+                // 错误处理
                 if (e instanceof InterruptedException || Thread.interrupted()) return;
                 if (e.getCause() instanceof ExtractException) result.postValue(Result.error(e.getCause().getMessage()));
                 else result.postValue(Result.empty());
@@ -310,6 +328,7 @@ public class SiteViewModel extends ViewModel {
         });
     }
 
+    // ViewModel销毁时清理资源
     @Override
     protected void onCleared() {
         if (executor != null) executor.shutdownNow();

@@ -1,8 +1,8 @@
-package com.fongmi.android.tv.ui.activity;
+package com.fongmi.android.tv.newUI.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,7 +15,6 @@ import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ItemBridgeAdapter;
 import androidx.leanback.widget.OnChildViewHolderSelectedListener;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewbinding.ViewBinding;
 import androidx.viewpager.widget.ViewPager;
 
 import com.fongmi.android.tv.App;
@@ -25,74 +24,70 @@ import com.fongmi.android.tv.bean.Filter;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.databinding.ActivityVodBinding;
-import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.ui.fragment.VodFragment;
 import com.fongmi.android.tv.ui.presenter.TypePresenter;
-import com.fongmi.android.tv.utils.KeyUtil;
 import com.fongmi.android.tv.utils.ResUtil;
-import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.Prefers;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class VodActivity extends BaseActivity implements TypePresenter.OnClickListener {
+public class OKHomeVodFragment extends Fragment implements TypePresenter.OnClickListener {
 
     private ActivityVodBinding mBinding;
     private ArrayObjectAdapter mAdapter;
     private PageAdapter mPageAdapter;
     private boolean coolDown;
     private View mOldView;
+    private String mKey;
+    private Result mResult;
 
-    public static void start(Activity activity, Result result) {
-        start(activity, VodConfig.get().getHome().getKey(), result);
+
+    public static OKHomeVodFragment newInstance(Result result) {
+        return newInstance(VodConfig.get().getHome().getKey(), result);
     }
 
-    public static void start(Activity activity, String key, Result result) {
-        if (result == null || result.getTypes().isEmpty()) return;
-        Intent intent = new Intent(activity, VodActivity.class);
-        intent.putExtra("key", key);
-        intent.putExtra("result", result);
-        for (Map.Entry<String, List<Filter>> entry : result.getFilters().entrySet()) Prefers.put("filter_" + key + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
-
-        SpiderDebug.log("key = " + key);
-        SpiderDebug.log("result = " + result);
-        SpiderDebug.log("result.getTypes() = " + result.getTypes());
-        SpiderDebug.log("result.getFilters() = " + result.getFilters());
-        activity.startActivity(intent);
-    }
-
-    private String getKey() {
-        return getIntent().getStringExtra("key");
-    }
-
-    private Result getResult() {
-        return getIntent().getParcelableExtra("result");
-    }
-
-    private List<Filter> getFilter(String typeId) {
-        return Filter.arrayFrom(Prefers.getString("filter_" + getKey() + "_" + typeId));
-    }
-
-    private Site getSite() {
-        return VodConfig.get().getSite(getKey());
+    public static OKHomeVodFragment newInstance(String key, Result result) {
+        OKHomeVodFragment fragment = new OKHomeVodFragment();
+        Bundle args = new Bundle();
+        args.putString("key", key);
+        args.putParcelable("result", result);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    protected ViewBinding getBinding() {
-        return mBinding = ActivityVodBinding.inflate(getLayoutInflater());
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mKey = getArguments().getString("key");
+        mResult = getArguments().getParcelable("result");
+        for (Map.Entry<String, List<Filter>> entry : mResult.getFilters().entrySet()) {
+            Prefers.put("filter_" + mKey + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
+        }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mBinding = ActivityVodBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
-    protected void initView() {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initView();
+        initEvent();
+    }
+
+    private void initView() {
         setRecyclerView();
         setTypes();
         setPager();
     }
 
-    @Override
-    protected void initEvent() {
+    private void initEvent() {
         mBinding.pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -107,6 +102,14 @@ public class VodActivity extends BaseActivity implements TypePresenter.OnClickLi
         });
     }
 
+    private List<Filter> getFilter(String typeId) {
+        return Filter.arrayFrom(Prefers.getString("filter_" + mKey + "_" + typeId));
+    }
+
+    private Site getSite() {
+        return VodConfig.get().getSite(mKey);
+    }
+
     private void setRecyclerView() {
         mBinding.recycler.setHorizontalSpacing(ResUtil.dp2px(16));
         mBinding.recycler.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -115,19 +118,24 @@ public class VodActivity extends BaseActivity implements TypePresenter.OnClickLi
 
     private List<Class> getTypes(Result result) {
         List<Class> items = new ArrayList<>();
-        for (String cate : getSite().getCategories()) for (Class item : result.getTypes()) if (cate.equals(item.getTypeName())) items.add(item);
+        for (String cate : getSite().getCategories()) {
+            for (Class item : result.getTypes()) {
+                if (cate.equals(item.getTypeName())) items.add(item);
+            }
+        }
         return items;
     }
 
     private void setTypes() {
-        Result result = getResult();
-        result.setTypes(getTypes(result));
-        for (Class item : result.getTypes()) item.setFilters(getFilter(item.getTypeId()));
-        mAdapter.setItems(result.getTypes(), null);
+        mResult.setTypes(getTypes(mResult));
+        for (Class item : mResult.getTypes()) {
+            item.setFilters(getFilter(item.getTypeId()));
+        }
+        mAdapter.setItems(mResult.getTypes(), null);
     }
 
     private void setPager() {
-        mBinding.pager.setAdapter(mPageAdapter = new PageAdapter(getSupportFragmentManager()));
+        mBinding.pager.setAdapter(mPageAdapter = new PageAdapter(getChildFragmentManager()));
     }
 
     private void onChildSelected(@Nullable RecyclerView.ViewHolder child) {
@@ -175,19 +183,29 @@ public class VodActivity extends BaseActivity implements TypePresenter.OnClickLi
         getFragment().onRefresh();
     }
 
-    @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (KeyUtil.isMenuKey(event)) updateFilter((Class) mAdapter.get(mBinding.pager.getCurrentItem()));
-        if (KeyUtil.isBackKey(event) && event.isLongPress() && getFragment().goRoot()) setCoolDown();
-        return super.dispatchKeyEvent(event);
+        if (event.getKeyCode() == KeyEvent.KEYCODE_MENU) {
+            updateFilter((Class) mAdapter.get(mBinding.pager.getCurrentItem()));
+            return true;
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            if (event.isLongPress() && getFragment().goRoot()) {
+                setCoolDown();
+                return true;
+            }
+            onBackPressed();
+            return true;
+        }
+        return false;
     }
 
-    @Override
     public void onBackPressed() {
         Class item = (Class) mAdapter.get(mBinding.pager.getCurrentItem());
-        if (item.getFilter() != null && item.getFilter()) updateFilter(item);
-        else if (getFragment().canBack()) getFragment().goBack();
-        else if (!coolDown) super.onBackPressed();
+        if (item.getFilter() != null && item.getFilter()) {
+            updateFilter(item);
+        } else if (getFragment().canBack()) {
+            getFragment().goBack();
+        }
     }
 
     class PageAdapter extends FragmentStatePagerAdapter {
@@ -200,7 +218,7 @@ public class VodActivity extends BaseActivity implements TypePresenter.OnClickLi
         @Override
         public Fragment getItem(int position) {
             Class type = (Class) mAdapter.get(position);
-            return VodFragment.newInstance(getKey(), type.getTypeId(), type.getStyle(), type.getExtend(false), "1".equals(type.getTypeFlag()));
+            return VodFragment.newInstance(mKey, type.getTypeId(), type.getStyle(), type.getExtend(false), "1".equals(type.getTypeFlag()));
         }
 
         @Override

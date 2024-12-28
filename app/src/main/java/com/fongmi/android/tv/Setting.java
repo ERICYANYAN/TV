@@ -483,7 +483,7 @@ public class Setting {
     }
 
     public static int getHomeUI() {
-        return 1;
+        return 0;
     }
 
     public static void putHomeButtons(String buttons) {
