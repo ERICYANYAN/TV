@@ -49,13 +49,28 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         indicatorRect = new RectF();
     }
 
-    public void setTabs(String... titles) {
+    public void setTabs(int index, String... titles) {
+
         container.removeAllViews();
         for (int i = 0; i < titles.length; i++) {
             TextView tab = createTab(titles[i]);
             tab.setTag(i);
             container.addView(tab);
         }
+        
+        // 添加post延迟，确保视图已经完成布局
+        post(() -> {
+            View selectedTab = container.getChildAt(index);
+            if (selectedTab != null) {
+                // 手动触发选中效果
+                selectTab(selectedTab);
+                // 请求焦点
+                selectedTab.requestFocus();
+                // 滚动到可见位置
+                int scrollX = (selectedTab.getLeft() - (getWidth() - selectedTab.getWidth()) / 2);
+                smoothScrollTo(scrollX, 0);
+            }
+        });
     }
 
     private TextView createTab(String title) {
@@ -67,13 +82,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         tab.setTextColor(ResUtil.getColor(R.color.grey_700));
         tab.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         
-        // 修改点击监听器，只在点击时切换选中状态
-        tab.setOnClickListener(v -> {
-            if ((int)v.getTag() != selectedPosition) {
-                selectTab(v);
-            }
-        });
-        
         // 修改焦点变化监听器，只处理高亮效果
         tab.setOnFocusChangeListener((v, hasFocus) -> {
             TextView textView = (TextView) v;
@@ -83,6 +91,9 @@ public class OKHomeTabLayout extends HorizontalScrollView {
                 // 滚动到可见位置
                 int scrollX = (v.getLeft() - (getWidth() - v.getWidth()) / 2);
                 smoothScrollTo(scrollX, 0);
+                if ((int)v.getTag() != selectedPosition) {
+                    selectTab(v);
+                }
             } else {
                 // 失去焦点时，根据是否是选中项来决定颜色
                 textView.setTextColor((int)v.getTag() == selectedPosition ? 
@@ -149,16 +160,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
 
     public void setOnTabSelectedListener(OnTabSelectedListener listener) {
         this.listener = listener;
-    }
-
-    public void setCurrentTab(int i) {
-        if (i >= 0 && i < container.getChildCount()) {
-            View view = container.getChildAt(i);
-            if (view != null) {
-                selectTab(view);
-                view.requestFocus();
-            }
-        }
     }
 
     public String getCurrentTabName() {

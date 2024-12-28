@@ -125,13 +125,11 @@ public class OKHomeActivity extends BaseActivity {
         ft.add(R.id.container, mAllFragment).hide(mAllFragment);
         ft.commitAllowingStateLoss();
         
-        // 设置初始的当前Fragment
-        mCurrentFragment = mRecommendFragment;
     }
 
     private void initTabLayout() {
         mTabLayout = mBinding.tabLayout;
-        mTabLayout.setTabs("搜索", "推荐", "收藏", "全部");
+        mTabLayout.setTabs(1,"搜索", "推荐", "收藏", "全部");
         mTabLayout.setOnTabSelectedListener(position -> {
             mCurrentTab = position;
             androidx.fragment.app.Fragment targetFragment;
@@ -153,7 +151,6 @@ public class OKHomeActivity extends BaseActivity {
             }
             showFragment(targetFragment);
         });
-        mTabLayout.setCurrentTab(mCurrentTab);
     }
 
     private void showFragment(androidx.fragment.app.Fragment targetFragment) {
