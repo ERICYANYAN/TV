@@ -106,6 +106,10 @@ public class Result implements Parcelable {
         }
     }
 
+    public String toJson(){
+        return App.gson().toJson(this);
+    }
+
     public static Result fromType(int type, String str) {
         return type == 0 ? fromXml(str) : fromJson(str);
     }

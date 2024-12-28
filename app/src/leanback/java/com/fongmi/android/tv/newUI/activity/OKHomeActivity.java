@@ -13,12 +13,14 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.model.SiteViewModel;
+import com.fongmi.android.tv.newUI.fragment.OKMineFragment;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment;
 import com.fongmi.android.tv.newUI.fragment.OKTestFragment;
 import com.fongmi.android.tv.utils.Tbs;
+import com.github.catvod.crawler.SpiderDebug;
 
 public class OKHomeActivity extends BaseActivity {
 
@@ -30,7 +32,7 @@ public class OKHomeActivity extends BaseActivity {
     // 四个主要的 fragment
     private OKTestFragment mSearchFragment;
     private OKTestFragment mRecommendFragment;
-    private OKTestFragment mMineFragment;
+    private OKMineFragment mMineFragment;
     private OKHomeVodFragment mAllFragment;
     private SiteViewModel mViewModel;
     private Result mResult;
@@ -58,6 +60,8 @@ public class OKHomeActivity extends BaseActivity {
         mViewModel = new ViewModelProvider(this).get(SiteViewModel.class);
         mViewModel.result.observe(this, result -> {
             mResult = result;
+            SpiderDebug.log("### mResult:");
+            SpiderDebug.log("### "+mResult.toJson());
             initFragments();
             initTabLayout();
         });
@@ -68,7 +72,7 @@ public class OKHomeActivity extends BaseActivity {
     private void initFragments() {
         mSearchFragment = OKTestFragment.newInstance("搜索");
         mRecommendFragment = OKTestFragment.newInstance("推荐");
-        mMineFragment = OKTestFragment.newInstance("我的");
+        mMineFragment = OKMineFragment.newInstance(mResult);
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
         
         // 初始化时添加所有Fragment
