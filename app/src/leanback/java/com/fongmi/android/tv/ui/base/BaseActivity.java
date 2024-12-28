@@ -97,14 +97,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void refreshWall() {
-        try {
-            if (!customWall()) return;
-            File file = FileUtil.getWall(Setting.getWall());
-            if (file.exists() && file.length() > 0) getWindow().setBackgroundDrawable(Drawable.createFromPath(file.getAbsolutePath()));
-            else getWindow().setBackgroundDrawableResource(ResUtil.getDrawable(file.getName()));
-        } catch (Exception e) {
-            getWindow().setBackgroundDrawableResource(R.drawable.wallpaper_1);
-        }
+        getWindow().setBackgroundDrawableResource(R.drawable.bg_dark);
+//        getWindow().setBackgroundDrawableResource(R.drawable.wallpaper_1);
+//        try {
+//            if (!customWall()) return;
+//            File file = FileUtil.getWall(Setting.getWall());
+//            if (file.exists() && file.length() > 0) getWindow().setBackgroundDrawable(Drawable.createFromPath(file.getAbsolutePath()));
+//            else getWindow().setBackgroundDrawableResource(ResUtil.getDrawable(file.getName()));
+//        } catch (Exception e) {
+//            getWindow().setBackgroundDrawableResource(R.drawable.wallpaper_1);
+//        }
     }
 
     private Resources hackResources(Resources resources) {
