@@ -90,7 +90,6 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     private boolean coolDown;
     private View mOldView;
     private boolean confirm;
-    private Clock mClock;
     private View mFocus;
 
     private Site getHome() {
@@ -111,8 +110,6 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     @Override
     protected void initView() {
         DLNARendererService.Companion.start(this, R.drawable.ic_logo);
-        mClock = Clock.create(mBinding.clock).format("MM/dd HH:mm:ss");
-//        Updater.get().release().start(this);
         Server.get().start();
         Tbs.init();
         setTitleView();
@@ -170,10 +167,8 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         mBinding.homeSiteLock.setVisibility(Setting.isHomeSiteLock() ? View.VISIBLE : View.GONE);
         if (Setting.getHomeUI() == 0) {
             mBinding.title.setTextSize(24);
-            mBinding.clock.setTextSize(24);
         } else {
             mBinding.title.setTextSize(20);
-            mBinding.clock.setTextSize(20);
         }
     }
 
@@ -542,7 +537,6 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     @Override
     protected void onResume() {
         super.onResume();
-        mClock.start();
         setTitleView();
         setHomeUI();
     }
@@ -550,7 +544,6 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     @Override
     protected void onPause() {
         super.onPause();
-        mClock.stop();
     }
 
     @Override
