@@ -1,13 +1,13 @@
 package com.fongmi.android.tv.ui.activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +31,6 @@ import com.bumptech.glide.request.target.Target;
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.Setting;
-import com.fongmi.android.tv.Updater;
 import com.fongmi.android.tv.api.config.LiveConfig;
 import com.fongmi.android.tv.api.config.VodConfig;
 import com.fongmi.android.tv.api.config.WallConfig;
@@ -41,6 +40,7 @@ import com.fongmi.android.tv.bean.Config;
 import com.fongmi.android.tv.bean.Filter;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
+import com.fongmi.android.tv.databinding.ActivityHome2Binding;
 import com.fongmi.android.tv.databinding.ActivityHomeBinding;
 import com.fongmi.android.tv.db.AppDatabase;
 import com.fongmi.android.tv.event.CastEvent;
@@ -77,11 +77,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HomeActivity extends BaseActivity implements CustomTitleView.Listener, TypePresenter.OnClickListener, ConfigCallback {
+public class HomeActivity2 extends BaseActivity implements CustomTitleView.Listener, TypePresenter.OnClickListener, ConfigCallback {
 
-    public ActivityHomeBinding mBinding;
+    public ActivityHome2Binding mBinding;
     private ArrayObjectAdapter mAdapter;
-    private HomeActivity.PageAdapter mPageAdapter;
+    private HomeActivity2.PageAdapter mPageAdapter;
     private SiteViewModel mViewModel;
     public Result mResult;
     private boolean loading;
@@ -90,13 +90,17 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     private boolean confirm;
     private View mFocus;
 
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, HomeActivity2.class));
+    }
+
     private Site getHome() {
         return VodConfig.get().getHome();
     }
 
     @Override
     protected ViewBinding getBinding() {
-        return mBinding = ActivityHomeBinding.inflate(getLayoutInflater());
+        return mBinding = ActivityHome2Binding.inflate(getLayoutInflater());
     }
 
     @Override
@@ -111,18 +115,12 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         Server.get().start();
         Tbs.init();
 //      设置左上角标题
-        setTitleView();
-        setHomeUI();
-        setViewModel();
-        setHomeType();
-        setPager();
-        initConfig();
-        mBinding.newHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                HomeActivity2.start(getActivity());
-            }
-        });
+//        setTitleView();
+//        setHomeUI();
+//        setViewModel();
+//        setHomeType();
+//        setPager();
+//        initConfig();
     }
 
     @Override
@@ -231,7 +229,7 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
     }
 
     private void setPager() {
-        mBinding.pager.setAdapter(mPageAdapter = new HomeActivity.PageAdapter(getSupportFragmentManager()));
+        mBinding.pager.setAdapter(mPageAdapter = new HomeActivity2.PageAdapter(getSupportFragmentManager()));
         mBinding.pager.setNoScrollItem(0);
     }
 

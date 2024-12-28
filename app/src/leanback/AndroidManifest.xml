@@ -85,6 +85,13 @@
         </activity>
 
         <activity
+            android:name=".ui.activity.HomeActivity2"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
+            android:screenOrientation="sensorLandscape" />
+
+
+
+        <activity
             android:name=".ui.activity.CastActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:exported="true"

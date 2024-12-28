@@ -68,13 +68,15 @@
                 tools:visibility="visible" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/new_home"
-            android:layout_width="50dp"
+        <com.fongmi.android.tv.ui.custom.CustomTabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
             android:layout_height="24dp"
-            android:text="新首页"
-
+            android:background="@color/black_30"
+            tools:background="@color/red_a_700"
+            android:layout_weight="1"
             />
+
     </LinearLayout>
 
     <LinearLayout
