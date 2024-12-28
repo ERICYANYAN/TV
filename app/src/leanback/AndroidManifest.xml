@@ -27,8 +27,11 @@
             android:name="design_height_in_dp"
             android:value="540" />
 
+        <!--      android:name=".newUI.activity.OKHomeActivity"   -->
+        <!--      android:name=".ui.activity.HomeActivity"   -->
         <activity
-            android:name=".ui.activity.HomeActivity"
+            android:name=".newUI.activity.OKHomeActivity"
+
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:exported="true"
             android:screenOrientation="sensorLandscape">
@@ -84,11 +87,12 @@
             </intent-filter>
         </activity>
 
+<!--      android:name=".newUI.activity.OKHomeActivity"   -->
+<!--      android:name=".ui.activity.HomeActivity"   -->
         <activity
-            android:name=".newUI.activity.OKHomeActivity"
+            android:name=".ui.activity.HomeActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:screenOrientation="sensorLandscape" />
-
 
 
         <activity

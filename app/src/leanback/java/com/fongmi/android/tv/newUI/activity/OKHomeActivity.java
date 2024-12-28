@@ -3,15 +3,23 @@ package com.fongmi.android.tv.newUI.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
 import com.android.cast.dlna.dmr.DLNARendererService;
+import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.R;
+import com.fongmi.android.tv.api.config.LiveConfig;
+import com.fongmi.android.tv.api.config.VodConfig;
+import com.fongmi.android.tv.api.config.WallConfig;
 import com.fongmi.android.tv.bean.Result;
+import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
+import com.fongmi.android.tv.event.RefreshEvent;
+import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.server.Server;
@@ -19,8 +27,12 @@ import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment;
 import com.fongmi.android.tv.newUI.fragment.OKTestFragment;
+import com.fongmi.android.tv.utils.Notify;
 import com.fongmi.android.tv.utils.Tbs;
 import com.github.catvod.crawler.SpiderDebug;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class OKHomeActivity extends BaseActivity {
 
@@ -54,6 +66,40 @@ public class OKHomeActivity extends BaseActivity {
         Server.get().start();
         Tbs.init();
         setViewModel();
+
+        WallConfig.get().init();
+        LiveConfig.get().init().load();
+        VodConfig.get().init().load(getCallback(), true);
+    }
+
+    private Callback getCallback() {
+        return new Callback() {
+            @Override
+            public void success(String result) {
+                Notify.show(result);
+            }
+
+            @Override
+            public void success() {
+                RefreshEvent.video();
+            }
+
+            @Override
+            public void error(String msg) {
+                mResult = Result.empty();
+                Notify.show(msg);
+            }
+        };
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshEvent(RefreshEvent event) {
+        super.onRefreshEvent(event);
+        switch (event.getType()) {
+            case VIDEO:
+                mViewModel.homeContent();
+                break;
+        }
     }
 
     private void setViewModel() {
@@ -65,8 +111,6 @@ public class OKHomeActivity extends BaseActivity {
             initFragments();
             initTabLayout();
         });
-        mViewModel.homeContent();
-
     }
 
     private void initFragments() {

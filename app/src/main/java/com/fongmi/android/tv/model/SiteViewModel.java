@@ -55,6 +55,7 @@ public class SiteViewModel extends ViewModel {
     private ExecutorService executor;             // 线程池执行器
 
     public SiteViewModel() {
+        SpiderDebug.log("### SiteVM:SiteViewModel");
         this.ep = new MutableLiveData<>();
         this.episode = new MutableLiveData<>();
         this.result = new MutableLiveData<>();
@@ -65,15 +66,18 @@ public class SiteViewModel extends ViewModel {
     }
 
     public void setEpisode(Episode value) {
+        SpiderDebug.log("### SiteVM:setEpisode");
         episode.setValue(value);
     }
 
     public void setDownload(Episode value) {
+        SpiderDebug.log("### SiteVM:setDownload"); 
         ep.setValue(value);
     }
 
     // 获取首页内容
     public void homeContent() {
+        SpiderDebug.log("### SiteVM:homeContent");
         execute(result, () -> {
             Site site = VodConfig.get().getHome();
             // 根据站点类型处理
@@ -106,6 +110,7 @@ public class SiteViewModel extends ViewModel {
 
     // 获取分类内容
     public void categoryContent(String key, String tid, String page, boolean filter, HashMap<String, String> extend) {
+        SpiderDebug.log("### SiteVM:categoryContent");
         execute(result, () -> {
             Site site = VodConfig.get().getSite(key);
             if (site.getType() == 3) {
@@ -129,6 +134,7 @@ public class SiteViewModel extends ViewModel {
 
     // 获取详情内容
     public void detailContent(String key, String id) {
+        SpiderDebug.log("### SiteVM:detailContent");
         execute(result, () -> {
             Site site = VodConfig.get().getSite(key);
             if (site.getType() == 3) {
@@ -163,6 +169,7 @@ public class SiteViewModel extends ViewModel {
 
     // 处理播放器内容
     private void executePlayer(MutableLiveData<Result> data, String key, String flag, String id) {
+        SpiderDebug.log("### SiteVM:executePlayer");
         execute(data, () -> {
             Source.get().stop();
             Site site = VodConfig.get().getSite(key);
@@ -212,14 +219,17 @@ public class SiteViewModel extends ViewModel {
     }
 
     public void playerContent(String key, String flag, String id) {
+        SpiderDebug.log("### SiteVM:playerContent");
         executePlayer(player, key, flag, id);
     }
 
     public void download(String key, String flag, String id) {
+        SpiderDebug.log("### SiteVM:download");
         executePlayer(download, key, flag, id);
     }
 
     public void action(String key, String action) {
+        SpiderDebug.log("### SiteVM:action");
         execute(this.action, () -> {
             Site site = VodConfig.get().getSite(key);
             if (site.getType() == 3) return Result.fromJson(site.recent().spider().action(action));
@@ -230,6 +240,7 @@ public class SiteViewModel extends ViewModel {
 
     // 搜索内容
     public void searchContent(Site site, String keyword, boolean quick) throws Throwable {
+        SpiderDebug.log("### SiteVM:searchContent");
         if (site.getType() == 3) {
             String searchContent = site.spider().searchContent(Trans.t2s(keyword), quick);
             SpiderDebug.log(site.getName() + "," + searchContent);
@@ -245,6 +256,7 @@ public class SiteViewModel extends ViewModel {
     }
 
     public void searchContent(Site site, String keyword, String page) {
+        SpiderDebug.log("### SiteVM:searchContent");
         execute(result, () -> {
             if (site.getType() == 3) {
                 String searchContent = site.spider().searchContent(Trans.t2s(keyword), false, page);
@@ -267,6 +279,7 @@ public class SiteViewModel extends ViewModel {
 
     // 工具方法：调用API
     private String call(Site site, ArrayMap<String, String> params, boolean limit) throws IOException {
+        SpiderDebug.log("### SiteVM:call");
         // 根据参数长度决定使用GET还是POST请求
         Call call = fetchExt(site, params, limit).length() <= 1000 
             ? OkHttp.newCall(site.getApi(), site.getHeaders(), params) 
@@ -275,6 +288,7 @@ public class SiteViewModel extends ViewModel {
     }
 
     private String fetchExt(Site site, ArrayMap<String, String> params, boolean limit) throws IOException {
+        SpiderDebug.log("### SiteVM:fetchExt");
         String extend = site.getExt();
         if (extend.startsWith("http")) extend = fetchExt(site);
         if (limit && extend.length() > 1000) extend = extend.substring(0, 1000);
@@ -283,6 +297,7 @@ public class SiteViewModel extends ViewModel {
     }
 
     private String fetchExt(Site site) throws IOException {
+        SpiderDebug.log("### SiteVM:fetchExt");
         Response res = OkHttp.newCall(site.getExt(), site.getHeaders()).execute();
         if (res.code() != 200) return "";
         site.setExt(res.body().string());
@@ -290,6 +305,7 @@ public class SiteViewModel extends ViewModel {
     }
 
     private Result fetchPic(Site site, Result result) throws Exception {
+        SpiderDebug.log("### SiteVM:fetchPic");
         if (site.getType() > 2 || result.getList().isEmpty() || result.getList().get(0).getVodPic().length() > 0) return result;
         ArrayList<String> ids = new ArrayList<>();
         if (site.getCategories().isEmpty()) for (Vod item : result.getList()) ids.add(item.getVodId());
@@ -304,6 +320,7 @@ public class SiteViewModel extends ViewModel {
     }
 
     private void post(Site site, Result result) {
+        SpiderDebug.log("### SiteVM:post");
         if (result.getList().isEmpty()) return;
         for (Vod vod : result.getList()) vod.setSite(site);
         this.search.postValue(result);
@@ -311,6 +328,7 @@ public class SiteViewModel extends ViewModel {
 
     // 异步执行任务的通用方法
     private void execute(MutableLiveData<Result> result, Callable<Result> callable) {
+        SpiderDebug.log("### SiteVM:execute");
         if (executor != null) executor.shutdownNow();
         executor = Executors.newFixedThreadPool(2);
         executor.execute(() -> {
@@ -331,6 +349,7 @@ public class SiteViewModel extends ViewModel {
     // ViewModel销毁时清理资源
     @Override
     protected void onCleared() {
+        SpiderDebug.log("### SiteVM:onCleared");
         if (executor != null) executor.shutdownNow();
     }
 }
