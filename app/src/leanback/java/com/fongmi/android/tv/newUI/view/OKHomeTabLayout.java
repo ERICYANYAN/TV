@@ -1,5 +1,6 @@
 package com.fongmi.android.tv.newUI.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -53,7 +54,7 @@ public class OKHomeTabLayout extends HorizontalScrollView {
 
         container.removeAllViews();
         for (int i = 0; i < titles.length; i++) {
-            TextView tab = createTab(titles[i]);
+            TextView tab = createTab(titles[i],i==index);
             tab.setTag(i);
             container.addView(tab);
         }
@@ -73,12 +74,14 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         });
     }
 
-    private TextView createTab(String title) {
+    @SuppressLint("NewApi")
+    private TextView createTab(String title, boolean isFocus) {
         TextView tab = new TextView(getContext());
         tab.setText(title);
         tab.setTextSize(16);
         tab.setPadding(ResUtil.dp2px(16), ResUtil.dp2px(8), ResUtil.dp2px(16), ResUtil.dp2px(8));
         tab.setFocusable(true);
+        tab.setFocusedByDefault(isFocus);
         tab.setTextColor(ResUtil.getColor(R.color.grey_700));
         tab.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         
