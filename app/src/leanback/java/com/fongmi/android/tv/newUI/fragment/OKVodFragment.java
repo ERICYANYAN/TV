@@ -162,14 +162,6 @@ public class OKVodFragment extends BaseFragment implements CustomScroller.Callba
         }
     }
 
-    private void setClick(ArrayObjectAdapter adapter, String key, Value item) {
-        for (int i = 0; i < adapter.size(); i++) ((Value) adapter.get(i)).setActivated(item);
-        adapter.notifyArrayItemRangeChanged(0, adapter.size());
-        if (item.isActivated()) mExtends.put(key, item.getV());
-        else mExtends.remove(key);
-        onRefresh();
-    }
-
     private void getVideo() {
         mScroller.reset();
         getVideo(getTypeId(), "1");
@@ -225,14 +217,6 @@ public class OKVodFragment extends BaseFragment implements CustomScroller.Callba
         mAdapter.addAll(mAdapter.size(), rows);
     }
 
-    private ListRow getRow(Filter filter) {
-        FilterPresenter presenter = new FilterPresenter(filter.getKey());
-        ArrayObjectAdapter adapter = new ArrayObjectAdapter(presenter);
-        presenter.setOnClickListener((key, item) -> setClick(adapter, key, item));
-        adapter.setItems(filter.getValue(), null);
-        return new ListRow(adapter);
-    }
-
     private void showProgress() {
         if (!mOpen) mBinding.progress.getRoot().setVisibility(View.VISIBLE);
     }
@@ -241,44 +225,8 @@ public class OKVodFragment extends BaseFragment implements CustomScroller.Callba
         mBinding.progress.getRoot().setVisibility(View.GONE);
     }
 
-    private void showFilter() {
-        List<ListRow> rows = new ArrayList<>();
-        for (Filter filter : mFilters) rows.add(getRow(filter));
-        App.post(() -> mBinding.recycler.scrollToPosition(0), 48);
-        mAdapter.addAll(0, rows);
-        hideProgress();
-    }
 
-    private void hideFilter() {
-        mAdapter.removeItems(0, mFilters.size());
-    }
 
-    public void toggleFilter(boolean open) {
-        if (open) showFilter();
-        else hideFilter();
-        mOpen = open;
-    }
-
-    public void onRefresh() {
-        getVideo();
-    }
-
-    public boolean canBack() {
-        return !mPages.isEmpty();
-    }
-
-    public void goBack() {
-        if (mPages.size() == 1) mBinding.recycler.setMoveTop(true);
-        mPages.remove(mPage = getLastPage());
-        onRefresh();
-    }
-
-    public boolean goRoot() {
-        if (mPages.isEmpty()) return false;
-        mPages.clear();
-        getVideo();
-        return true;
-    }
 
     @Override
     public void onItemClick(Vod item) {

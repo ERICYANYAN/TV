@@ -2,7 +2,9 @@ package com.fongmi.android.tv.newUI.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
@@ -20,6 +22,8 @@ import com.fongmi.android.tv.utils.Tbs;
 
 public class OKHomeActivity extends BaseActivity {
 
+    private static final String SAVED_CURRENT_TAB = "current_tab";
+
     private OkActivityHomeBinding mBinding;
     private OKHomeTabLayout mTabLayout;
     
@@ -30,6 +34,8 @@ public class OKHomeActivity extends BaseActivity {
     private OKHomeVodFragment mAllFragment;
     private SiteViewModel mViewModel;
     private Result mResult;
+    private int mCurrentTab = 1;
+    private androidx.fragment.app.Fragment mCurrentFragment;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, OKHomeActivity.class));
@@ -64,35 +70,56 @@ public class OKHomeActivity extends BaseActivity {
         mRecommendFragment = OKTestFragment.newInstance("推荐");
         mMineFragment = OKTestFragment.newInstance("我的");
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
+        
+        // 初始化时添加所有Fragment
+        androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.container, mSearchFragment).hide(mSearchFragment);
+        ft.add(R.id.container, mRecommendFragment).hide(mRecommendFragment);
+        ft.add(R.id.container, mMineFragment).hide(mMineFragment);
+        ft.add(R.id.container, mAllFragment).hide(mAllFragment);
+        ft.commitAllowingStateLoss();
+        
+        // 设置初始的当前Fragment
+        mCurrentFragment = mRecommendFragment;
     }
 
     private void initTabLayout() {
         mTabLayout = mBinding.tabLayout;
         mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
         mTabLayout.setOnTabSelectedListener(position -> {
+            mCurrentTab = position;
+            androidx.fragment.app.Fragment targetFragment;
             switch (position) {
                 case 0:
-                    showFragment(mSearchFragment);
+                    targetFragment = mSearchFragment;
                     break;
                 case 1:
-                    showFragment(mRecommendFragment);
+                    targetFragment = mRecommendFragment;
                     break;
                 case 2:
-                    showFragment(mMineFragment);
+                    targetFragment = mMineFragment;
                     break;
                 case 3:
-                    showFragment(mAllFragment);
+                    targetFragment = mAllFragment;
                     break;
+                default:
+                    return;
             }
+            showFragment(targetFragment);
         });
-        mTabLayout.setCurrentTab(1); // 默认选中"推荐"
+        mTabLayout.setCurrentTab(mCurrentTab);
     }
 
-    private void showFragment(androidx.fragment.app.Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+    private void showFragment(androidx.fragment.app.Fragment targetFragment) {
+        if (mCurrentFragment == targetFragment) return;
+        
+        androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (mCurrentFragment != null) {
+            ft.hide(mCurrentFragment);
+        }
+        ft.show(targetFragment);
+        ft.commitAllowingStateLoss();
+        mCurrentFragment = targetFragment;
     }
 
     @Override
@@ -102,5 +129,18 @@ public class OKHomeActivity extends BaseActivity {
         mRecommendFragment = null;
         mMineFragment = null;
         mAllFragment = null;
+        mCurrentFragment = null;
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SAVED_CURRENT_TAB, mCurrentTab);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mCurrentTab = savedInstanceState.getInt(SAVED_CURRENT_TAB, 1);
     }
 }
