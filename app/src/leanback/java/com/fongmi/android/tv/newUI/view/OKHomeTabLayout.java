@@ -26,7 +26,7 @@ public class OKHomeTabLayout extends HorizontalScrollView {
     private OnTabSelectedListener listener;
     private float indicatorLeft;
     private float indicatorRight;
-    private int selectedPosition;
+    private int selectedPosition = -1;
 
     public OKHomeTabLayout(@NonNull Context context) {
         this(context, null);
@@ -55,7 +55,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
             TextView tab = createTab(titles[i]);
             tab.setTag(i);
             container.addView(tab);
-            if (i == 0) selectTab(tab);
         }
     }
 
@@ -67,9 +66,29 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         tab.setFocusable(true);
         tab.setTextColor(ResUtil.getColor(R.color.grey_700));
         tab.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        tab.setOnClickListener(v -> selectTab(v));
+        
+        // 修改点击监听器，只在点击时切换选中状态
+        tab.setOnClickListener(v -> {
+            if ((int)v.getTag() != selectedPosition) {
+                selectTab(v);
+            }
+        });
+        
+        // 修改焦点变化监听器，只处理高亮效果
         tab.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) selectTab(v);
+            TextView textView = (TextView) v;
+            if (hasFocus) {
+                // 仅高亮显示，不切换选中状态
+                textView.setTextColor(ResUtil.getColor(R.color.white));
+                // 滚动到可见位置
+                int scrollX = (v.getLeft() - (getWidth() - v.getWidth()) / 2);
+                smoothScrollTo(scrollX, 0);
+            } else {
+                // 失去焦点时，根据是否是选中项来决定颜色
+                textView.setTextColor((int)v.getTag() == selectedPosition ? 
+                    ResUtil.getColor(R.color.white) : 
+                    ResUtil.getColor(R.color.grey_700));
+            }
         });
         return tab;
     }
@@ -81,7 +100,10 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         // 更新选中状态
         for (int i = 0; i < container.getChildCount(); i++) {
             TextView tab = (TextView) container.getChildAt(i);
-            tab.setTextColor(i == position ? ResUtil.getColor(R.color.white) : ResUtil.getColor(R.color.grey_700));
+            // 如果当前tab没有焦点，则设置对应的颜色
+            if (!tab.hasFocus()) {
+                tab.setTextColor(i == position ? ResUtil.getColor(R.color.white) : ResUtil.getColor(R.color.grey_700));
+            }
         }
 
         // 更新指示器位置
@@ -90,10 +112,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
             indicatorRight = view.getRight();
             invalidate();
         });
-
-        // 滚动到可见位置
-        int scrollX = (view.getLeft() - (getWidth() - view.getWidth()) / 2);
-        smoothScrollTo(scrollX, 0);
 
         selectedPosition = position;
         if (listener != null) listener.onTabSelected(position);
@@ -137,6 +155,7 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         if (i >= 0 && i < container.getChildCount()) {
             View view = container.getChildAt(i);
             if (view != null) {
+                selectTab(view);
                 view.requestFocus();
             }
         }
