@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +52,7 @@ import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.player.Source;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
+import com.fongmi.android.tv.ui.custom.CustomTabLayout;
 import com.fongmi.android.tv.ui.custom.CustomTitleView;
 import com.fongmi.android.tv.ui.dialog.HistoryDialog;
 import com.fongmi.android.tv.ui.dialog.MenuDialog;
@@ -119,6 +121,20 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         setHomeType();
         setPager();
         initConfig();
+        initTab();
+        
+    }
+
+    private void initTab() {
+        CustomTabLayout tabLayout = findViewById(R.id.tabLayout);
+
+        tabLayout.setTabs("搜索", "推荐", "我的", "全部");
+        tabLayout.setCurrentTab(1); // 默认选中"推荐"标签
+        tabLayout.setOnTabSelectedListener(position -> {
+            // 处理标签选中事件
+            // toast 标签选中
+            Toast.makeText(this, "Tab selected: " + position, Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override

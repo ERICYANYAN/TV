@@ -19,7 +19,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
+            android:layout_weight="1"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -64,6 +64,14 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
         </LinearLayout>
+
+        <com.fongmi.android.tv.ui.custom.CustomTabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/black_30"
+            android:layout_weight="1"
+            />
 
         <LinearLayout
             android:layout_width="wrap_content"
