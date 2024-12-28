@@ -112,26 +112,13 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         DLNARendererService.Companion.start(this, R.drawable.ic_logo);
         Server.get().start();
         Tbs.init();
+//      设置左上角标题
         setTitleView();
-        setRecyclerView();
+        setHomeUI();
         setViewModel();
         setHomeType();
         setPager();
         initConfig();
-        initTab();
-        
-    }
-
-    private void initTab() {
-        CustomTabLayout tabLayout = findViewById(R.id.tabLayout);
-
-        tabLayout.setTabs("搜索", "推荐", "我的", "全部");
-        tabLayout.setCurrentTab(1); // 默认选中"推荐"标签
-        tabLayout.setOnTabSelectedListener(position -> {
-            // 处理标签选中事件
-            // toast 标签选中
-            Toast.makeText(this, "Tab selected: " + position, Toast.LENGTH_SHORT).show();
-        });
     }
 
     @Override
@@ -172,16 +159,17 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         }
     }
 
-    private void setRecyclerView() {
-        setHomeUI();
-        mBinding.recycler.setHorizontalSpacing(ResUtil.dp2px(16));
-        mBinding.recycler.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mBinding.recycler.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(new TypePresenter(this))));
-    }
 
     private void setHomeUI() {
-        if (Setting.getHomeUI() == 0) mBinding.recycler.setVisibility(View.GONE);
+//        强行显示
+        if (Setting.getHomeUI() == 0 || true) mBinding.recycler.setVisibility(View.GONE);
         else mBinding.recycler.setVisibility(View.VISIBLE);
+
+        if (mBinding.recycler.getAdapter() == null) {
+            mBinding.recycler.setHorizontalSpacing(ResUtil.dp2px(16));
+            mBinding.recycler.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+            mBinding.recycler.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(new TypePresenter(this))));
+        }
     }
 
     private void setViewModel() {
@@ -193,7 +181,9 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
 
     private List<Class> getTypes(Result result) {
         List<Class> items = new ArrayList<>();
-        for (String cate : getHome().getCategories()) for (Class item : result.getTypes()) if (Trans.s2t(cate).equals(item.getTypeName())) items.add(item);
+        for (String cate : getHome().getCategories())
+            for (Class item : result.getTypes())
+                if (Trans.s2t(cate).equals(item.getTypeName())) items.add(item);
         return items;
     }
 
@@ -224,7 +214,8 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
 
     public void setTypes(Result result) {
         result.setTypes(getTypes(result));
-        for (Map.Entry<String, List<Filter>> entry : result.getFilters().entrySet()) Prefers.put("filter_" + getKey() + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
+        for (Map.Entry<String, List<Filter>> entry : result.getFilters().entrySet())
+            Prefers.put("filter_" + getKey() + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
         for (Class item : result.getTypes()) item.setFilters(getFilter(item.getTypeId()));
         if (mAdapter.size() > 1) mAdapter.removeItems(1, mAdapter.size() - 1);
         if (result.getTypes().size() > 0) mAdapter.addAll(1, result.getTypes());
@@ -266,13 +257,10 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
 
     public void hideToolBar() {
         mBinding.toolbar.setVisibility(View.GONE);
-        if (mBinding.recycler.getVisibility() == View.VISIBLE) mBinding.blank.setVisibility(View.VISIBLE);
-        else mBinding.blank.setVisibility(View.GONE);
     }
 
     public void showToolBar() {
         mBinding.toolbar.setVisibility(View.VISIBLE);
-        mBinding.blank.setVisibility(View.GONE);
     }
 
     private HomeFragment getHomeFragment() {
@@ -345,7 +333,8 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
 
             @Override
             public void error(String msg) {
-                if (getHomeFragment().inited) getHomeFragment().mBinding.progressLayout.showContent();
+                if (getHomeFragment().inited)
+                    getHomeFragment().mBinding.progressLayout.showContent();
                 else App.post(() -> getHomeFragment().mBinding.progressLayout.showContent(), 1000);
                 mResult = Result.empty();
                 Notify.show(msg);
@@ -395,7 +384,8 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
             @Override
             public void success() {
                 Config config = VodConfig.get().getConfig().json("").save();
-                if (!config.isEmpty()) setConfig(config, ResUtil.getString(R.string.config_refreshed));
+                if (!config.isEmpty())
+                    setConfig(config, ResUtil.getString(R.string.config_refreshed));
             }
         });
     }
@@ -529,8 +519,10 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
             else if (Setting.getHomeMenuKey() == 7) KeepActivity.start(this);
             else if (Setting.getHomeMenuKey() == 8) SettingActivity.start(this);
         }
-        if (!isHomeFragment && KeyUtil.isMenuKey(event)) updateFilter((Class) mAdapter.get(mBinding.pager.getCurrentItem()));
-        if (!isHomeFragment && KeyUtil.isBackKey(event) && event.isLongPress() && getFragment().goRoot()) setCoolDown();
+        if (!isHomeFragment && KeyUtil.isMenuKey(event))
+            updateFilter((Class) mAdapter.get(mBinding.pager.getCurrentItem()));
+        if (!isHomeFragment && KeyUtil.isBackKey(event) && event.isLongPress() && getFragment().goRoot())
+            setCoolDown();
         return super.dispatchKeyEvent(event);
     }
 
