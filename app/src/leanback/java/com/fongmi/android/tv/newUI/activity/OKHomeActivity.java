@@ -2,6 +2,7 @@ package com.fongmi.android.tv.newUI.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.SparseArray;
 
 import androidx.viewbinding.ViewBinding;
 
@@ -14,11 +15,14 @@ import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKTestFragment;
 import com.fongmi.android.tv.utils.Tbs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class OKHomeActivity extends BaseActivity {
 
     public OkActivityHomeBinding mBinding;
     private OKHomeTabLayout mTabLayout;
-    private OKTestFragment mOKTestFragment;
+    private Map<String, OKTestFragment> mFragmentMap;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, OKHomeActivity.class));
@@ -35,24 +39,34 @@ public class OKHomeActivity extends BaseActivity {
         Server.get().start();
         Tbs.init();
         
-        // 初始化 TabLayout
+        mFragmentMap = new HashMap<>();
         initTabLayout();
-
     }
 
     private void initTabLayout() {
         mTabLayout = mBinding.tabLayout;
         mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
         mTabLayout.setOnTabSelectedListener(position -> {
-            // 每次切换 tab 都重新加载 TestFragment
-            mOKTestFragment = OKTestFragment.newInstance(mTabLayout.getCurrentTabName());
+            String tabName = mTabLayout.getCurrentTabName();
+            OKTestFragment fragment = mFragmentMap.get(tabName);
+            if (fragment == null) {
+                fragment = OKTestFragment.newInstance(tabName);
+                mFragmentMap.put(tabName, fragment);
+            }
+            
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, mOKTestFragment)
+                    .replace(R.id.container, fragment)
                     .commit();
         });
         mTabLayout.setCurrentTab(1); // 默认选中"推荐"
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mFragmentMap != null) {
+            mFragmentMap.clear();
+        }
+    }
 }
