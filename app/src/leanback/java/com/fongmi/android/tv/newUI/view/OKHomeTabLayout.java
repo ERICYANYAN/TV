@@ -1,4 +1,4 @@
-package com.fongmi.android.tv.ui.custom;
+package com.fongmi.android.tv.newUI.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.utils.ResUtil;
 
-public class CustomTabLayout extends HorizontalScrollView {
+public class OKHomeTabLayout extends HorizontalScrollView {
 
     private final LinearLayout container;
     private final Paint indicatorPaint;
@@ -28,11 +28,11 @@ public class CustomTabLayout extends HorizontalScrollView {
     private float indicatorRight;
     private int selectedPosition;
 
-    public CustomTabLayout(@NonNull Context context) {
+    public OKHomeTabLayout(@NonNull Context context) {
         this(context, null);
     }
 
-    public CustomTabLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public OKHomeTabLayout(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setHorizontalScrollBarEnabled(false);
         setFillViewport(true);

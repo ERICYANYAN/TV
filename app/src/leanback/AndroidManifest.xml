@@ -85,7 +85,7 @@
         </activity>
 
         <activity
-            android:name=".ui.activity.HomeActivity2"
+            android:name=".newUI.activity.OKHomeActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:screenOrientation="sensorLandscape" />
 

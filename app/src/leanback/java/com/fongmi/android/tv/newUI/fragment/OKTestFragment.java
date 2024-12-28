@@ -1,6 +1,5 @@
-package com.fongmi.android.tv.ui.fragment;
+package com.fongmi.android.tv.newUI.fragment;
 
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +12,15 @@ import com.fongmi.android.tv.databinding.OkFragmentTestBinding;
 import com.fongmi.android.tv.ui.base.BaseFragment;
 import com.fongmi.android.tv.utils.Notify;
 
-public class TestFragment extends BaseFragment {
+public class OKTestFragment extends BaseFragment {
 
     private OkFragmentTestBinding mBinding;
 
     
     private String message;
 
-    public static TestFragment newInstance(String message) {
-        TestFragment fragment = new TestFragment();
+    public static OKTestFragment newInstance(String message) {
+        OKTestFragment fragment = new OKTestFragment();
         fragment.message = message;
         return fragment;
     }
@@ -54,8 +53,6 @@ public class TestFragment extends BaseFragment {
         mBinding.btn3.setNextFocusUpId(mBinding.btn2.getId());
         mBinding.btn2.setNextFocusUpId(mBinding.btn1.getId());
 
-        // 默认第一个按钮获取焦点
-        mBinding.btn1.requestFocus();
     }
 
     protected void initEvent() {

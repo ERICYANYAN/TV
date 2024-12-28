@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.fongmi.android.tv.ui.custom.CustomTabLayout
+    <com.fongmi.android.tv.newUI.view.OKHomeTabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
