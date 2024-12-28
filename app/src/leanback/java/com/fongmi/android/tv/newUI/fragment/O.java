@@ -1,6 +1,5 @@
 package com.fongmi.android.tv.newUI.fragment;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -21,19 +20,11 @@ import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.bean.Style;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.databinding.FragmentHomeBinding;
-import com.fongmi.android.tv.newUI.activity.OKHomeActivity;
 import com.fongmi.android.tv.ui.activity.CollectActivity;
-import com.fongmi.android.tv.ui.activity.HistoryActivity;
-import com.fongmi.android.tv.ui.activity.KeepActivity;
-import com.fongmi.android.tv.ui.activity.LiveActivity;
-import com.fongmi.android.tv.ui.activity.PushActivity;
-import com.fongmi.android.tv.ui.activity.SearchActivity;
-import com.fongmi.android.tv.ui.activity.SettingActivity;
 import com.fongmi.android.tv.ui.activity.VideoActivity;
 import com.fongmi.android.tv.ui.base.BaseFragment;
 import com.fongmi.android.tv.ui.custom.CustomRowPresenter;
 import com.fongmi.android.tv.ui.custom.CustomSelector;
-import com.fongmi.android.tv.ui.presenter.FuncPresenter;
 import com.fongmi.android.tv.ui.presenter.HeaderPresenter;
 import com.fongmi.android.tv.ui.presenter.HistoryPresenter;
 import com.fongmi.android.tv.ui.presenter.ProgressPresenter;
@@ -46,22 +37,22 @@ import java.util.List;
 
 
 // 我的页面Fragment，包含历史记录和推荐内容
-public class OKMineFragment extends BaseFragment implements VodPresenter.OnClickListener, HistoryPresenter.OnClickListener {
+public class O extends BaseFragment implements VodPresenter.OnClickListener, HistoryPresenter.OnClickListener {
 
     // 布局绑定
     public FragmentHomeBinding mBinding;
 
     // 历史记录相关适配器和Presenter
     private ArrayObjectAdapter mHistoryAdapter;
-    public HistoryPresenter mPresenter;
+    public HistoryPresenter mHistoryPresenter;
     private ArrayObjectAdapter mAdapter;
     
     // 存储API返回的结果数据
     public Result mResult;
 
     // 创建Fragment实例，传入API结果数据
-    public static OKMineFragment newInstance(Result mResult) {
-        OKMineFragment fragment =  new OKMineFragment();
+    public static O newInstance(Result mResult) {
+        O fragment =  new O();
         fragment.mResult = mResult;
         return  fragment;
     }
@@ -108,7 +99,7 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
     private void setAdapter() {
         if (Setting.isHomeHistory()) mAdapter.add(R.string.home_history);
         mAdapter.add(R.string.home_recommend);
-        mHistoryAdapter = new ArrayObjectAdapter(mPresenter = new HistoryPresenter(this));
+        mHistoryAdapter = new ArrayObjectAdapter(mHistoryPresenter = new HistoryPresenter(this));
     }
 
     // 添加视频内容
@@ -142,7 +133,7 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
         recommendIndex = getRecommendIndex();
         List<History> items = History.get();
         boolean exist = recommendIndex - historyIndex == 2;
-        if (renew) mHistoryAdapter = new ArrayObjectAdapter(mPresenter = new HistoryPresenter(this));
+        if (renew) mHistoryAdapter = new ArrayObjectAdapter(mHistoryPresenter = new HistoryPresenter(this));
         if ((items.isEmpty() && exist) || (renew && exist)) mAdapter.removeItems(historyIndex, 1);
         if ((items.size() > 0 && !exist) || (renew && exist)) mAdapter.add(historyIndex, new ListRow(mHistoryAdapter));
         mHistoryAdapter.setItems(items, null);
@@ -150,7 +141,7 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
 
     // 设置历史记录删除模式
     public void setHistoryDelete(boolean delete) {
-        mPresenter.setDelete(delete);
+        mHistoryPresenter.setDelete(delete);
         mHistoryAdapter.notifyArrayItemRangeChanged(0, mHistoryAdapter.size());
     }
 
@@ -158,7 +149,7 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
     private void clearHistory() {
         mAdapter.removeItems(getHistoryIndex(), 1);
         History.delete(VodConfig.getCid());
-        mPresenter.setDelete(false);
+        mHistoryPresenter.setDelete(false);
         mHistoryAdapter.clear();
     }
 
@@ -185,13 +176,13 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
         mHistoryAdapter.remove(item.delete());
         if (mHistoryAdapter.size() > 0) return;
         mAdapter.removeItems(getHistoryIndex(), 1);
-        mPresenter.setDelete(false);
+        mHistoryPresenter.setDelete(false);
     }
 
     // 历史记录长按事件处理
     @Override
     public boolean onLongClick() {
-        if (mPresenter.isDelete()) {
+        if (mHistoryPresenter.isDelete()) {
             new MaterialAlertDialogBuilder(getActivity()).setTitle(R.string.dialog_delete_record).setMessage(R.string.dialog_delete_history).setNegativeButton(R.string.dialog_negative, null).setPositiveButton(R.string.dialog_positive, (dialog, which) -> clearHistory()).show();
         } else {
             setHistoryDelete(true);
@@ -212,11 +203,4 @@ public class OKMineFragment extends BaseFragment implements VodPresenter.OnClick
         CollectActivity.start(getActivity(), item.getVodName());
         return true;
     }
-
-    // 页面恢复时刷新功能按钮
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
 }

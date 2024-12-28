@@ -13,7 +13,8 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.model.SiteViewModel;
-import com.fongmi.android.tv.newUI.fragment.OKMineFragment;
+import com.fongmi.android.tv.newUI.fragment.O;
+import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
@@ -32,7 +33,7 @@ public class OKHomeActivity extends BaseActivity {
     // 四个主要的 fragment
     private OKTestFragment mSearchFragment;
     private OKTestFragment mRecommendFragment;
-    private OKMineFragment mMineFragment;
+    private OKKeepFragment mKeepFragment;
     private OKHomeVodFragment mAllFragment;
     private SiteViewModel mViewModel;
     private Result mResult;
@@ -72,14 +73,14 @@ public class OKHomeActivity extends BaseActivity {
     private void initFragments() {
         mSearchFragment = OKTestFragment.newInstance("搜索");
         mRecommendFragment = OKTestFragment.newInstance("推荐");
-        mMineFragment = OKMineFragment.newInstance(mResult);
+        mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
         
         // 初始化时添加所有Fragment
         androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.container, mSearchFragment).hide(mSearchFragment);
         ft.add(R.id.container, mRecommendFragment).hide(mRecommendFragment);
-        ft.add(R.id.container, mMineFragment).hide(mMineFragment);
+        ft.add(R.id.container, mKeepFragment).hide(mKeepFragment);
         ft.add(R.id.container, mAllFragment).hide(mAllFragment);
         ft.commitAllowingStateLoss();
         
@@ -89,7 +90,7 @@ public class OKHomeActivity extends BaseActivity {
 
     private void initTabLayout() {
         mTabLayout = mBinding.tabLayout;
-        mTabLayout.setTabs("搜索", "推荐", "我的", "全部");
+        mTabLayout.setTabs("搜索", "推荐", "收藏", "全部");
         mTabLayout.setOnTabSelectedListener(position -> {
             mCurrentTab = position;
             androidx.fragment.app.Fragment targetFragment;
@@ -101,7 +102,7 @@ public class OKHomeActivity extends BaseActivity {
                     targetFragment = mRecommendFragment;
                     break;
                 case 2:
-                    targetFragment = mMineFragment;
+                    targetFragment = mKeepFragment;
                     break;
                 case 3:
                     targetFragment = mAllFragment;
@@ -131,7 +132,7 @@ public class OKHomeActivity extends BaseActivity {
         super.onDestroy();
         mSearchFragment = null;
         mRecommendFragment = null;
-        mMineFragment = null;
+        mKeepFragment = null;
         mAllFragment = null;
         mCurrentFragment = null;
     }
