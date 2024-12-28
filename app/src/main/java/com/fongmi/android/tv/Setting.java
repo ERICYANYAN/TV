@@ -483,7 +483,7 @@ public class Setting {
     }
 
     public static int getHomeUI() {
-        return Prefers.getInt("home_ui", 1);
+        return 1;
     }
 
     public static void putHomeButtons(String buttons) {

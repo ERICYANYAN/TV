@@ -162,7 +162,7 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
 
     private void setHomeUI() {
 //        强行显示
-        if (Setting.getHomeUI() == 0 || true) mBinding.recycler.setVisibility(View.GONE);
+        if (Setting.getHomeUI() == 0 ) mBinding.recycler.setVisibility(View.GONE);
         else mBinding.recycler.setVisibility(View.VISIBLE);
 
         if (mBinding.recycler.getAdapter() == null) {
@@ -244,8 +244,7 @@ public class HomeActivity extends BaseActivity implements CustomTitleView.Listen
         public void run() {
             int position = mBinding.recycler.getSelectedPosition();
             mBinding.pager.setCurrentItem(position);
-            if (position == 0) showToolBar();
-            else hideToolBar();
+            showToolBar();
         }
     };
 

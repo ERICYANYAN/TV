@@ -96,6 +96,7 @@
             android:paddingStart="24dp"
             android:paddingEnd="12dp"
             tools:background="@color/blue_300"
+            android:background="@color/blue_300"
             app:focusOutEnd="true"
             app:focusOutFront="true" />
 
@@ -104,6 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:background="@color/yellow_300"
+            android:background="@color/yellow_300"
             />
 
     </LinearLayout>
