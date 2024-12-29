@@ -22,6 +22,7 @@ import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment2;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
+import com.fongmi.android.tv.newUI.fragment.OKRecommendFragment;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
@@ -44,7 +45,7 @@ public class OKHomeActivity extends BaseActivity {
     
     // 四个主要的 fragment
     private OKTestFragment mSearchFragment;
-    private OKHomeVodFragment2 mRecommendFragment;
+    private OKRecommendFragment mRecommendFragment;
     private OKKeepFragment mKeepFragment;
     private OKHomeVodFragment mAllFragment;
     private SiteViewModel mViewModel;
@@ -71,9 +72,6 @@ public class OKHomeActivity extends BaseActivity {
         WallConfig.get().init();
         LiveConfig.get().init().load();
         VodConfig.get().init().load(getCallback(), true);
-
-
-      
 
     }
 
@@ -120,7 +118,7 @@ public class OKHomeActivity extends BaseActivity {
 
     private void initFragments() {
         mSearchFragment = OKTestFragment.newInstance("搜索");
-        mRecommendFragment = OKHomeVodFragment2.newInstance(mResult.clear());
+        mRecommendFragment = OKRecommendFragment.newInstance(mResult.clear());
         mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
         
