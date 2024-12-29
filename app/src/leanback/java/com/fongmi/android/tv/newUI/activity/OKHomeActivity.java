@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
 import com.android.cast.dlna.dmr.DLNARendererService;
+import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.api.config.LiveConfig;
 import com.fongmi.android.tv.api.config.VodConfig;
@@ -42,9 +43,7 @@ public class OKHomeActivity extends BaseActivity {
 
     private OkActivityHomeBinding mBinding;
     private OKHomeTabLayout mTabLayout;
-    
-    // 四个主要的 fragment
-    private OKTestFragment mSearchFragment;
+
     private OKRecommendFragment mRecommendFragment;
     private OKKeepFragment mKeepFragment;
     private OKHomeVodFragment mAllFragment;
@@ -104,6 +103,12 @@ public class OKHomeActivity extends BaseActivity {
             case VIDEO:
                 mViewModel.homeContent();
                 break;
+            case HISTORY:
+                mRecommendFragment.getHistory(false);
+                break;
+            case KEEP:
+                mKeepFragment.getKeep();
+                break;
         }
     }
 
@@ -112,26 +117,24 @@ public class OKHomeActivity extends BaseActivity {
         mViewModel.result.observe(this, result -> {
             mResult = result;
             SpiderDebug.log("### mResult:");
-            SpiderDebug.log("### "+mResult.toJson());
+            SpiderDebug.log("### " + mResult.toJson());
             initFragments();
             initTabLayout();
         });
     }
 
     private void initFragments() {
-        mSearchFragment = OKTestFragment.newInstance("搜索");
         mRecommendFragment = OKRecommendFragment.newInstance(Result.fromJson(mResult.toJson()));
         mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
-        
+
         // 初始化时添加所有Fragment
         androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.container, mSearchFragment).hide(mSearchFragment);
         ft.add(R.id.container, mRecommendFragment).hide(mRecommendFragment);
         ft.add(R.id.container, mKeepFragment).hide(mKeepFragment);
         ft.add(R.id.container, mAllFragment).hide(mAllFragment);
         ft.commitAllowingStateLoss();
-        
+
     }
 
     private void initTabLayout() {
@@ -169,15 +172,24 @@ public class OKHomeActivity extends BaseActivity {
             }
         });
 
-        // 设置默认选中推荐标签
-        mBinding.tabLayout.getTabAt(1).view.requestFocus();
-        mBinding.tabLayout.getTabAt(1).select();
+        mBinding.tabLayout.getTabAt(0).select();
+        showFragment(mRecommendFragment);
+
+        App.post(new Runnable() {
+            @Override
+            public void run() {
+                // 设置默认选中推荐标签
+                mBinding.tabLayout.getTabAt(0).view.requestFocus();
+                mBinding.tabLayout.getTabAt(0).view.requestFocusFromTouch();
+            }
+        }, 100);
+
 
     }
 
     private void showFragment(androidx.fragment.app.Fragment targetFragment) {
         if (mCurrentFragment == targetFragment) return;
-        
+
         androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         if (mCurrentFragment != null) {
             ft.hide(mCurrentFragment);
@@ -190,7 +202,6 @@ public class OKHomeActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mSearchFragment = null;
         mRecommendFragment = null;
         mKeepFragment = null;
         mAllFragment = null;
@@ -208,4 +219,6 @@ public class OKHomeActivity extends BaseActivity {
         super.onRestoreInstanceState(savedInstanceState);
         mCurrentTab = savedInstanceState.getInt(SAVED_CURRENT_TAB, 1);
     }
+
+
 }

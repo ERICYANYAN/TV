@@ -54,7 +54,7 @@ public class OKKeepFragment extends BaseFragment implements KeepAdapter.OnClickL
         mBinding.recycler.addItemDecoration(new SpaceItemDecoration(Product.getColumn(), 16));
     }
 
-    private void getKeep() {
+    public void getKeep() {
         mAdapter.addAll(Keep.getVod());
     }
 

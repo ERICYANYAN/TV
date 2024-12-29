@@ -23,6 +23,7 @@ import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.bean.Style;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.databinding.FragmentHomeBinding;
+import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.ui.activity.CollectActivity;
 import com.fongmi.android.tv.ui.activity.VideoActivity;
 import com.fongmi.android.tv.ui.base.BaseFragment;
@@ -37,6 +38,9 @@ import com.github.catvod.utils.Prefers;
 import com.github.catvod.utils.Trans;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.Lists;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -234,4 +238,7 @@ public class OKRecommendFragment extends BaseFragment implements VodPresenter.On
         CollectActivity.start(getActivity(), item.getVodName());
         return true;
     }
+
+
 }
+
