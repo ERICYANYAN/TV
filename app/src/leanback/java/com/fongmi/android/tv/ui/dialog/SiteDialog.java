@@ -102,6 +102,7 @@ public class SiteDialog implements SiteAdapter.OnClickListener{
         params.width = (int) (ResUtil.getScreenWidth() * getWidth());
         dialog.getWindow().setAttributes(params);
         dialog.getWindow().setDimAmount(0);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_dark);
         dialog.show();
     }
 
