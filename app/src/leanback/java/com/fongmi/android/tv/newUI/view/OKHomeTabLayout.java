@@ -18,6 +18,9 @@ import androidx.annotation.Nullable;
 
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.utils.ResUtil;
+import com.github.catvod.crawler.SpiderDebug;
+
+import java.util.ArrayList;
 
 public class OKHomeTabLayout extends HorizontalScrollView {
 
@@ -48,6 +51,10 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         indicatorPaint.setColor(ResUtil.getColor(R.color.white));
         
         indicatorRect = new RectF();
+
+        setFocusable(true);
+        setFocusableInTouchMode(true);
+        setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
     }
 
     public void setTabs(int index, String... titles) {
@@ -89,7 +96,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         tab.setOnFocusChangeListener((v, hasFocus) -> {
             TextView textView = (TextView) v;
             if (hasFocus) {
-                // 仅高亮显示，不切换选中状态
                 textView.setTextColor(ResUtil.getColor(R.color.white));
                 // 滚动到可见位置
                 int scrollX = (v.getLeft() - (getWidth() - v.getWidth()) / 2);
@@ -98,7 +104,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
                     selectTab(v);
                 }
             } else {
-                // 失去焦点时，根据是否是选中项来决定颜色
                 textView.setTextColor((int)v.getTag() == selectedPosition ? 
                     ResUtil.getColor(R.color.white) : 
                     ResUtil.getColor(R.color.grey_700));
@@ -131,6 +136,8 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         if (listener != null) listener.onTabSelected(position);
     }
 
+
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -141,6 +148,10 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         indicatorRect.top = getHeight() - indicatorHeight;
         indicatorRect.bottom = getHeight();
         canvas.drawRect(indicatorRect, indicatorPaint);
+    }
+
+    private View getSelectedView(){
+       return (TextView) container.getChildAt(selectedPosition);
     }
 
     @Override
@@ -165,13 +176,26 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         this.listener = listener;
     }
 
-    public String getCurrentTabName() {
-        // 获取当前选中的tab的名称，需要把 view 转换为 TextView
-        TextView textView = (TextView) container.getChildAt(selectedPosition);
-        return textView.getText().toString();
+    @Override
+    public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
+        if (this.hasFocus()) {
+            super.addFocusables(views, direction, focusableMode);
+        } else {
+            View selectedView = getSelectedView();
+            if (selectedView != null) {
+                views.add(0,selectedView);
+            } else {
+                super.addFocusables(views, direction, focusableMode);
+            }
+        }
     }
 
     public interface OnTabSelectedListener {
         void onTabSelected(int position);
     }
+
+
+
+
+
 } 

@@ -30,7 +30,7 @@
         <!--      android:name=".newUI.activity.OKHomeActivity"   -->
         <!--      android:name=".ui.activity.HomeActivity"   -->
         <activity
-            android:name=".ui.activity.HomeActivity"
+            android:name=".newUI.activity.OKHomeActivity"
 
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:exported="true"
@@ -90,7 +90,7 @@
 <!--      android:name=".newUI.activity.OKHomeActivity"   -->
 <!--      android:name=".ui.activity.HomeActivity"   -->
         <activity
-            android:name=".newUI.activity.OKHomeActivity"
+            android:name=".ui.activity.HomeActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|navigation|orientation"
             android:screenOrientation="sensorLandscape" />
 
