@@ -1,5 +1,7 @@
 package com.fongmi.android.tv.ui.holder;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
 import com.fongmi.android.tv.bean.Vod;
@@ -29,10 +31,13 @@ public class VodRectHolder extends BaseVodHolder {
     public void initView(Vod item) {
         binding.name.setText(item.getVodName());
         binding.year.setText(item.getVodYear());
-        binding.site.setText(item.getSiteName());
+//        binding.site.setText(item.getSiteName());
         binding.remark.setText(item.getVodRemarks());
-        binding.site.setVisibility(item.getSiteVisible());
-        binding.year.setVisibility(item.getYearVisible());
+//        binding.site.setVisibility(item.getSiteVisible());
+
+        binding.site.setVisibility(View.GONE);
+//        binding.year.setVisibility(item.getYearVisible());
+        binding.year.setVisibility(View.GONE);
         binding.name.setVisibility(item.getNameVisible());
         binding.remark.setVisibility(item.getRemarkVisible());
         binding.getRoot().setOnClickListener(v -> listener.onItemClick(item));

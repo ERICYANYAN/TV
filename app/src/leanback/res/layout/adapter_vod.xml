@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/name"
-        android:background="#CC177535"
+        android:background="#20FFFFFF"
         android:ellipsize="marquee"
         android:padding="4dp"
         android:singleLine="true"

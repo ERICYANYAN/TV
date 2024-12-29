@@ -64,7 +64,9 @@ public class HistoryPresenter extends Presenter {
         setClickListener(holder.view, item);
         holder.binding.name.setText(item.getVodName());
         holder.binding.site.setText(item.getSiteName());
-        holder.binding.site.setVisibility(item.getSiteVisible());
+//        holder.binding.site.setVisibility(item.getSiteVisible());
+        holder.binding.site.setVisibility(View.GONE);
+        holder.binding.year.setVisibility(View.GONE);
         holder.binding.remark.setVisibility(delete ? View.GONE : View.VISIBLE);
         holder.binding.delete.setVisibility(!delete ? View.GONE : View.VISIBLE);
         holder.binding.remark.setText(ResUtil.getString(R.string.vod_last, item.getVodRemarks()));
