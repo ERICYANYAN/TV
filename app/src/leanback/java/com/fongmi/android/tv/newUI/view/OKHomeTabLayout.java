@@ -116,13 +116,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
             }
         }
 
-        // 更新指示器位置
-        view.post(() -> {
-            indicatorLeft = view.getLeft();
-            indicatorRight = view.getRight();
-            invalidate();
-        });
-
         selectedPosition = position;
         if (listener != null) listener.onTabSelected(position);
     }
