@@ -1,7 +1,6 @@
 package com.fongmi.android.tv.newUI.fragment;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +8,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ItemBridgeAdapter;
 import androidx.leanback.widget.OnChildViewHolderSelectedListener;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.api.config.VodConfig;
@@ -23,11 +19,8 @@ import com.fongmi.android.tv.bean.Class;
 import com.fongmi.android.tv.bean.Filter;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
-import com.fongmi.android.tv.databinding.ActivityVodBinding;
 import com.fongmi.android.tv.databinding.OkHomeVodFragmentBinding;
 import com.fongmi.android.tv.newUI.presenter.OKTypePresenter;
-import com.fongmi.android.tv.ui.fragment.VodFragment;
-import com.fongmi.android.tv.ui.presenter.TypePresenter;
 import com.fongmi.android.tv.utils.ResUtil;
 import com.github.catvod.crawler.SpiderDebug;
 import com.github.catvod.utils.Prefers;
@@ -36,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OKHomeVodFragment2 extends Fragment implements OKTypePresenter.OnClickListener {
+public class OKHomeVodFragment2 extends Fragment implements OKTypePresenter.OnFilterClickListener {
 
     private OkHomeVodFragmentBinding mBinding;
     private ArrayObjectAdapter mAdapter;
@@ -131,19 +124,10 @@ public class OKHomeVodFragment2 extends Fragment implements OKTypePresenter.OnCl
 
 
     @Override
-    public void onItemClick(Class item) {
+    public void onFilterItemClick(Class item) {
         log("onItemClick " + item.getTypeName());
     }
 
-    @Override
-    public boolean onItemLongClick(Class item) {
-        return true;
-    }
-
-    @Override
-    public void onRefresh(Class item) {
-        log("onRefresh " + item.getTypeName());
-    }
 
     private void log(String msg) {
         SpiderDebug.log("### 2 :" + msg);

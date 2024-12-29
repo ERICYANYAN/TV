@@ -8,25 +8,21 @@ import androidx.leanback.widget.Presenter;
 
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Class;
-import com.fongmi.android.tv.databinding.AdapterTypeBinding;
 import com.fongmi.android.tv.databinding.OkAdapterTypeBinding;
 import com.fongmi.android.tv.utils.ResUtil;
 
 public class OKTypePresenter extends Presenter {
 
-    private final OnClickListener mListener;
+    private final OnFilterClickListener mListener;
 
-    public OKTypePresenter(OnClickListener listener) {
+    public OKTypePresenter(OnFilterClickListener listener) {
         this.mListener = listener;
     }
 
-    public interface OnClickListener {
+    public interface OnFilterClickListener {
 
-        void onItemClick(Class item);
+        void onFilterItemClick(Class item);
 
-        void onRefresh(Class item);
-
-        boolean onItemLongClick(Class item);
     }
 
     @Override
@@ -41,12 +37,12 @@ public class OKTypePresenter extends Presenter {
         holder.binding.text.setText(item.getTypeName());
         holder.binding.text.setCompoundDrawablePadding(ResUtil.dp2px(4));
         holder.binding.text.setCompoundDrawablesWithIntrinsicBounds(0, 0, getIcon(item), 0);
-        setOnClickListener(holder, view -> mListener.onItemClick(item));
-        holder.view.setOnLongClickListener(view -> mListener.onItemLongClick(item));
+        setOnClickListener(holder, view -> mListener.onFilterItemClick(item));
     }
 
     @Override
-    public void onUnbindViewHolder(Presenter.ViewHolder viewHolder) {
+    public void onUnbindViewHolder(@NonNull Presenter.ViewHolder viewHolder) {
+
     }
 
     private int getIcon(Class item) {
