@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -22,6 +23,7 @@ import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.newUI.fragment.OKRecommendFragment;
 import com.fongmi.android.tv.server.Server;
+import com.fongmi.android.tv.ui.activity.SearchActivity;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment;
@@ -70,6 +72,8 @@ public class OKHomeActivity extends BaseActivity {
         WallConfig.get().init();
         LiveConfig.get().init().load();
         VodConfig.get().init().load(getCallback(), true);
+
+        mBinding.search.setOnClickListener(view -> SearchActivity.start(getActivity()));
 
     }
 
