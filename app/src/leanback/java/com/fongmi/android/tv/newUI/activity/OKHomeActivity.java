@@ -17,9 +17,11 @@ import com.fongmi.android.tv.api.config.LiveConfig;
 import com.fongmi.android.tv.api.config.VodConfig;
 import com.fongmi.android.tv.api.config.WallConfig;
 import com.fongmi.android.tv.bean.Result;
+import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.Callback;
+import com.fongmi.android.tv.impl.SiteCallback;
 import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.newUI.fragment.OKRecommendFragment;
@@ -28,6 +30,7 @@ import com.fongmi.android.tv.ui.activity.SearchActivity;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment;
+import com.fongmi.android.tv.ui.dialog.SiteDialog;
 import com.fongmi.android.tv.utils.Notify;
 import com.fongmi.android.tv.utils.Tbs;
 import com.github.catvod.crawler.SpiderDebug;
@@ -36,13 +39,11 @@ import com.google.android.material.tabs.TabLayout;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-public class OKHomeActivity extends BaseActivity {
+public class OKHomeActivity extends BaseActivity implements SiteCallback {
 
     private static final String SAVED_CURRENT_TAB = "current_tab";
 
     private OkActivityHomeBinding mBinding;
-    private OKHomeTabLayout mTabLayout;
-
     private OKRecommendFragment mRecommendFragment;
     private OKKeepFragment mKeepFragment;
     private OKHomeVodFragment mAllFragment;
@@ -50,6 +51,8 @@ public class OKHomeActivity extends BaseActivity {
     private Result mResult;
     private int mCurrentTab = 1;
     private androidx.fragment.app.Fragment mCurrentFragment;
+
+    private boolean isFirst = true;
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, OKHomeActivity.class));
@@ -72,7 +75,7 @@ public class OKHomeActivity extends BaseActivity {
         VodConfig.get().init().load(getCallback(), true);
 
         mBinding.search.setOnClickListener(view -> SearchActivity.start(getActivity()));
-
+        mBinding.site.setOnClickListener(view -> SiteDialog.create(getActivity()).show());
     }
 
     private Callback getCallback() {
@@ -117,26 +120,34 @@ public class OKHomeActivity extends BaseActivity {
             mResult = result;
             SpiderDebug.log("### mResult:");
             SpiderDebug.log("### " + mResult.toJson());
-            initFragments();
-            initTabLayout();
+            if (isFirst){
+                initFragments();
+                initTabLayout();
+                isFirst = false;
+            }
+
         });
     }
 
     private void initFragments() {
+        if (mRecommendFragment != null || mKeepFragment != null || mAllFragment != null) {
+            clearFragments();
+        }
+
         mRecommendFragment = OKRecommendFragment.newInstance(Result.fromJson(mResult.toJson()));
         mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
 
-        // 初始化时添加所有Fragment
         androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.container, mRecommendFragment).hide(mRecommendFragment);
         ft.add(R.id.container, mKeepFragment).hide(mKeepFragment);
         ft.add(R.id.container, mAllFragment).hide(mAllFragment);
         ft.commitAllowingStateLoss();
-
     }
 
     private void initTabLayout() {
+        mBinding.tabLayout.removeAllTabs();
+
         mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>推荐</b>")));
         mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>收藏</b>")));
         mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>全部</b>")));
@@ -220,4 +231,31 @@ public class OKHomeActivity extends BaseActivity {
     }
 
 
+    @Override
+    public void setSite(Site item) {
+        SpiderDebug.log("### site"+item.getName());
+        clearFragments();
+        mBinding.tabLayout.removeAllTabs();
+        isFirst = true;
+        VodConfig.get().setHome(item);
+        mViewModel.homeContent();
+    }
+
+    @Override
+    public void onChanged() {
+        SpiderDebug.log("### site: onChanged");
+    }
+
+    private void clearFragments() {
+        androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (mRecommendFragment != null) ft.remove(mRecommendFragment);
+        if (mKeepFragment != null) ft.remove(mKeepFragment);
+        if (mAllFragment != null) ft.remove(mAllFragment);
+        ft.commitNowAllowingStateLoss();
+        
+        mRecommendFragment = null;
+        mKeepFragment = null;
+        mAllFragment = null;
+        mCurrentFragment = null;
+    }
 }
