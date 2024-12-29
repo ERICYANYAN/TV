@@ -3,6 +3,7 @@ package com.fongmi.android.tv.newUI.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -134,9 +135,9 @@ public class OKHomeActivity extends BaseActivity {
     }
 
     private void initTabLayout() {
-        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("推荐"));
-        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("收藏"));
-        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("全部"));
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>推荐</b>")));
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>收藏</b>")));
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText(Html.fromHtml("<b>全部</b>")));
 
         mBinding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
