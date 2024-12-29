@@ -26,10 +26,7 @@ public class OKHomeTabLayout extends HorizontalScrollView {
 
     private final LinearLayout container;
     private final Paint indicatorPaint;
-    private final RectF indicatorRect;
     private OnTabSelectedListener listener;
-    private float indicatorLeft;
-    private float indicatorRight;
     private int selectedPosition = -1;
 
     public OKHomeTabLayout(@NonNull Context context) {
@@ -49,8 +46,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         indicatorPaint = new Paint();
         indicatorPaint.setAntiAlias(true);
         indicatorPaint.setColor(ResUtil.getColor(R.color.white));
-        
-        indicatorRect = new RectF();
 
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -89,6 +84,7 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         tab.setPadding(ResUtil.dp2px(16), ResUtil.dp2px(8), ResUtil.dp2px(16), ResUtil.dp2px(8));
         tab.setFocusable(true);
         tab.setFocusedByDefault(isFocus);
+        tab.setBackgroundResource(R.drawable.ok_home_tab_item_bg);
         tab.setTextColor(ResUtil.getColor(R.color.grey_700));
         tab.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         
@@ -96,17 +92,12 @@ public class OKHomeTabLayout extends HorizontalScrollView {
         tab.setOnFocusChangeListener((v, hasFocus) -> {
             TextView textView = (TextView) v;
             if (hasFocus) {
-                textView.setTextColor(ResUtil.getColor(R.color.white));
-                // 滚动到可见位置
-                int scrollX = (v.getLeft() - (getWidth() - v.getWidth()) / 2);
-                smoothScrollTo(scrollX, 0);
+                textView.setTextColor(ResUtil.getColor(R.color.black));
                 if ((int)v.getTag() != selectedPosition) {
                     selectTab(v);
                 }
             } else {
-                textView.setTextColor((int)v.getTag() == selectedPosition ? 
-                    ResUtil.getColor(R.color.white) : 
-                    ResUtil.getColor(R.color.grey_700));
+                textView.setTextColor(ResUtil.getColor(R.color.grey_700));
             }
         });
         return tab;
@@ -134,20 +125,6 @@ public class OKHomeTabLayout extends HorizontalScrollView {
 
         selectedPosition = position;
         if (listener != null) listener.onTabSelected(position);
-    }
-
-
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        // 绘制底部指示器
-        float indicatorHeight = ResUtil.dp2px(2);
-        indicatorRect.left = indicatorLeft;
-        indicatorRect.right = indicatorRight;
-        indicatorRect.top = getHeight() - indicatorHeight;
-        indicatorRect.bottom = getHeight();
-        canvas.drawRect(indicatorRect, indicatorPaint);
     }
 
     private View getSelectedView(){
