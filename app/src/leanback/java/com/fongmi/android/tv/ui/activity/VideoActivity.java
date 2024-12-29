@@ -1132,17 +1132,20 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
     }
 
     private void setControlNextFocus() {
+        mBinding.control.actionLayout.setVisibility(View.GONE);
+
         int count = mBinding.control.actionLayout.getChildCount();
         for(int i=0; i<count-1; i++) {
             View btn = mBinding.control.actionLayout.getChildAt(i);
-            if (btn == null || !isVisible(btn) || !btn.isEnabled()) continue;
-            for(int j=i+1; j<count; j++) {
-                View next = mBinding.control.actionLayout.getChildAt(j);
-                if (next == null || !isVisible(next) || !next.isEnabled()) continue;
-                btn.setNextFocusRightId(next.getId());
-                next.setNextFocusLeftId(btn.getId());
-                break;
-            }
+            btn.setFocusable(false);
+//            if (btn == null || !isVisible(btn) || !btn.isEnabled()) continue;
+//            for(int j=i+1; j<count; j++) {
+//                View next = mBinding.control.actionLayout.getChildAt(j);
+//                if (next == null || !isVisible(next) || !next.isEnabled()) continue;
+//                btn.setNextFocusRightId(next.getId());
+//                next.setNextFocusLeftId(btn.getId());
+//                break;
+//            }
         }
     }
 
@@ -1150,9 +1153,11 @@ public class VideoActivity extends BaseActivity implements CustomKeyDownVod.List
         mBinding.control.danmu.setVisibility(mBinding.danmaku.isPrepared() ? View.VISIBLE : View.GONE);
         mBinding.control.getRoot().setVisibility(View.VISIBLE);
         mBinding.control.episodes.setVisibility(Setting.getFullscreenMenuKey() == 0 ? View.VISIBLE : View.GONE);
-        view.requestFocus();
+
         setControlNextFocus();
         setR1Callback();
+        App.post(() -> mBinding.control.seek.requestFocus(),500);
+
     }
 
     private void hideControl() {
