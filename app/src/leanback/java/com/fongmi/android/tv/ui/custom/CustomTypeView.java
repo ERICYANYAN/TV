@@ -35,8 +35,7 @@ public class CustomTypeView extends AppCompatTextView {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (hasEvent(event)) return onKeyDown();
-        else return super.dispatchKeyEvent(event);
+        return super.dispatchKeyEvent(event);
     }
 
     private boolean onKeyDown() {
@@ -49,8 +48,8 @@ public class CustomTypeView extends AppCompatTextView {
     @Override
     protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
-        App.post(() -> coolDown = false, 500);
-        if (focused) coolDown = true;
+//        App.post(() -> coolDown = false, 500);
+//        if (focused) coolDown = true;
     }
 
     public interface Listener {
