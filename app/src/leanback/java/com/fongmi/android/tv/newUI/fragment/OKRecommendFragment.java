@@ -10,10 +10,13 @@ import androidx.leanback.widget.ItemBridgeAdapter;
 import androidx.leanback.widget.ListRow;
 import androidx.viewbinding.ViewBinding;
 
+import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.Product;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.Setting;
 import com.fongmi.android.tv.api.config.VodConfig;
+import com.fongmi.android.tv.bean.Class;
+import com.fongmi.android.tv.bean.Filter;
 import com.fongmi.android.tv.bean.History;
 import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
@@ -30,10 +33,14 @@ import com.fongmi.android.tv.ui.presenter.HistoryPresenter;
 import com.fongmi.android.tv.ui.presenter.ProgressPresenter;
 import com.fongmi.android.tv.ui.presenter.VodPresenter;
 import com.fongmi.android.tv.utils.ResUtil;
+import com.github.catvod.utils.Prefers;
+import com.github.catvod.utils.Trans;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 // 我的页面Fragment，包含历史记录和推荐内容
@@ -74,8 +81,32 @@ public class OKRecommendFragment extends BaseFragment implements VodPresenter.On
         mBinding.progressLayout.showProgress();
         setRecyclerView();    // 设置RecyclerView
         setAdapter();         // 设置适配器
-        addVideo(mResult);    // 添加视频数据
+        setTypes(mResult);
         mBinding.progressLayout.showContent();
+    }
+
+    public void setTypes(Result result) {
+        result.setTypes(getTypes(result));
+        for (Map.Entry<String, List<Filter>> entry : result.getFilters().entrySet())
+            Prefers.put("filter_" + getKey() + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
+        for (Class item : result.getTypes()) item.setFilters(getFilter(item.getTypeId()));
+        addVideo(result);
+    }
+
+    private List<Class> getTypes(Result result) {
+        List<Class> items = new ArrayList<>();
+        for (String cate : getHome().getCategories())
+            for (Class item : result.getTypes())
+                if (Trans.s2t(cate).equals(item.getTypeName())) items.add(item);
+        return items;
+    }
+
+    private List<Filter> getFilter(String typeId) {
+        return Filter.arrayFrom(Prefers.getString("filter_" + getKey() + "_" + typeId));
+    }
+
+    private String getKey() {
+        return getHome().getKey();
     }
 
     // 初始化数据
@@ -89,8 +120,8 @@ public class OKRecommendFragment extends BaseFragment implements VodPresenter.On
         CustomSelector selector = new CustomSelector();
         selector.addPresenter(Integer.class, new HeaderPresenter());
         selector.addPresenter(String.class, new ProgressPresenter());
-        selector.addPresenter(ListRow.class, new CustomRowPresenter(16), VodPresenter.class);
         selector.addPresenter(ListRow.class, new CustomRowPresenter(16), HistoryPresenter.class);
+        selector.addPresenter(ListRow.class, new CustomRowPresenter(16), VodPresenter.class);
         mBinding.recycler.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(selector)));
         mBinding.recycler.setVerticalSpacing(ResUtil.dp2px(16));
     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,7 +19,6 @@ import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.model.SiteViewModel;
-import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment2;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.newUI.fragment.OKRecommendFragment;
 import com.fongmi.android.tv.server.Server;
@@ -118,7 +116,7 @@ public class OKHomeActivity extends BaseActivity {
 
     private void initFragments() {
         mSearchFragment = OKTestFragment.newInstance("搜索");
-        mRecommendFragment = OKRecommendFragment.newInstance(mResult.clear());
+        mRecommendFragment = OKRecommendFragment.newInstance(Result.fromJson(mResult.toJson()));
         mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
         
