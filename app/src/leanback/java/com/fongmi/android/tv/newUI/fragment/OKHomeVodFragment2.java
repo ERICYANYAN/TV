@@ -25,6 +25,7 @@ import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.databinding.ActivityVodBinding;
 import com.fongmi.android.tv.databinding.OkHomeVodFragmentBinding;
+import com.fongmi.android.tv.newUI.presenter.OKTypePresenter;
 import com.fongmi.android.tv.ui.fragment.VodFragment;
 import com.fongmi.android.tv.ui.presenter.TypePresenter;
 import com.fongmi.android.tv.utils.ResUtil;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClickListener {
+public class OKHomeVodFragment2 extends Fragment implements OKTypePresenter.OnClickListener {
 
     private OkHomeVodFragmentBinding mBinding;
     private ArrayObjectAdapter mAdapter;
@@ -65,6 +66,7 @@ public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClic
         for (Map.Entry<String, List<Filter>> entry : mResult.getFilters().entrySet()) {
             Prefers.put("filter_" + mKey + "_" + entry.getKey(), App.gson().toJson(entry.getValue()));
         }
+        log("mkey" + mKey);
     }
 
     @Nullable
@@ -77,22 +79,21 @@ public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClic
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initView();
-        initEvent();
-    }
 
-    private void initView() {
-        setRecyclerView();
-        setTypes();
-    }
+        mBinding.filterContainer.setHorizontalSpacing(ResUtil.dp2px(16));
+        mBinding.filterContainer.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    private void initEvent() {
-        mBinding.pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mBinding.filterContainer.setSelectedPosition(position);
-            }
-        });
+        OKTypePresenter typePresenter = new OKTypePresenter(this);
+        mAdapter = new ArrayObjectAdapter(typePresenter);
+        mBinding.filterContainer.setAdapter(new ItemBridgeAdapter(mAdapter));
+
+//      只获取 site 中有的类型
+        mResult.setTypes(getTypes(mResult));
+        for (Class item : mResult.getTypes()) {
+            item.setFilters(getFilter(item.getTypeId()));
+        }
+        mAdapter.setItems(mResult.getTypes(), null);
+
         mBinding.filterContainer.addOnChildViewHolderSelectedListener(new OnChildViewHolderSelectedListener() {
             @Override
             public void onChildViewHolderSelected(@NonNull RecyclerView parent, @Nullable RecyclerView.ViewHolder child, int position, int subposition) {
@@ -109,11 +110,6 @@ public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClic
         return VodConfig.get().getSite(mKey);
     }
 
-    private void setRecyclerView() {
-        mBinding.filterContainer.setHorizontalSpacing(ResUtil.dp2px(16));
-        mBinding.filterContainer.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mBinding.filterContainer.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(new TypePresenter(this))));
-    }
 
     private List<Class> getTypes(Result result) {
         List<Class> items = new ArrayList<>();
@@ -125,33 +121,18 @@ public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClic
         return items;
     }
 
-    private void setTypes() {
-        mResult.setTypes(getTypes(mResult));
-        for (Class item : mResult.getTypes()) {
-            item.setFilters(getFilter(item.getTypeId()));
-        }
-        mAdapter.setItems(mResult.getTypes(), null);
-    }
-
 
     private void onChildSelected(@Nullable RecyclerView.ViewHolder child) {
         if (mOldView != null) mOldView.setActivated(false);
         if (child == null) return;
         mOldView = child.itemView;
         mOldView.setActivated(true);
-        App.post(mRunnable, 100);
     }
 
-    private final Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            mBinding.pager.setCurrentItem(mBinding.filterContainer.getSelectedPosition());
-        }
-    };
 
     @Override
     public void onItemClick(Class item) {
-        log("onItemClick "+item.getTypeName());
+        log("onItemClick " + item.getTypeName());
     }
 
     @Override
@@ -161,13 +142,12 @@ public class OKHomeVodFragment2 extends Fragment implements TypePresenter.OnClic
 
     @Override
     public void onRefresh(Class item) {
-        log("onRefresh "+item.getTypeName());
+        log("onRefresh " + item.getTypeName());
     }
 
     private void log(String msg) {
         SpiderDebug.log("### 2 :" + msg);
     }
-
 
 
 }

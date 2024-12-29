@@ -29,6 +29,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/***
+ * {"list":[],"class":[{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt","type_name":"全部"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"dbtop250","type_name":"豆瓣电影Top250"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/dyy","type_name":"电影"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/huayudianying","type_name":"电视剧"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/guochanju","type_name":"国产剧"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/mj","type_name":"美剧"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/hj","type_name":"韩剧"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/rj","type_name":"日剧"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/huayudianying","type_name":"华语电影"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/meiguodianying","type_name":"欧美电影"},
+ * {"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/hanguodianying","type_name":"韩国电影"},{"activated":false,"circle":0,"land":0,"ratio":0.0,"type_id":"movie_bt_series/ribendianying","type_name":"日本电影"}]}
+ * */
+
 @Root(name = "rss", strict = false)
 public class Result implements Parcelable {
 
