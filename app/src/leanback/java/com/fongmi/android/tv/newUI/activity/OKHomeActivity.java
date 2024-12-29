@@ -19,6 +19,7 @@ import com.fongmi.android.tv.databinding.OkActivityHomeBinding;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.Callback;
 import com.fongmi.android.tv.model.SiteViewModel;
+import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment2;
 import com.fongmi.android.tv.newUI.fragment.OKKeepFragment;
 import com.fongmi.android.tv.server.Server;
 import com.fongmi.android.tv.ui.base.BaseActivity;
@@ -41,7 +42,7 @@ public class OKHomeActivity extends BaseActivity {
     
     // 四个主要的 fragment
     private OKTestFragment mSearchFragment;
-    private OKTestFragment mRecommendFragment;
+    private OKHomeVodFragment2 mRecommendFragment;
     private OKKeepFragment mKeepFragment;
     private OKHomeVodFragment mAllFragment;
     private SiteViewModel mViewModel;
@@ -113,7 +114,7 @@ public class OKHomeActivity extends BaseActivity {
 
     private void initFragments() {
         mSearchFragment = OKTestFragment.newInstance("搜索");
-        mRecommendFragment = OKTestFragment.newInstance("推荐");
+        mRecommendFragment = OKHomeVodFragment2.newInstance(mResult.clear());
         mKeepFragment = OKKeepFragment.newInstance();
         mAllFragment = OKHomeVodFragment.newInstance(mResult.clear());
         
