@@ -29,6 +29,7 @@ import com.fongmi.android.tv.newUI.fragment.OKTestFragment;
 import com.fongmi.android.tv.utils.Notify;
 import com.fongmi.android.tv.utils.Tbs;
 import com.github.catvod.crawler.SpiderDebug;
+import com.google.android.material.tabs.TabLayout;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -69,6 +70,10 @@ public class OKHomeActivity extends BaseActivity {
         WallConfig.get().init();
         LiveConfig.get().init().load();
         VodConfig.get().init().load(getCallback(), true);
+
+
+      
+
     }
 
     private Callback getCallback() {
@@ -129,29 +134,44 @@ public class OKHomeActivity extends BaseActivity {
     }
 
     private void initTabLayout() {
-        mTabLayout = mBinding.tabLayout;
-        mTabLayout.setTabs(1,"搜索", "推荐", "收藏", "全部");
-        mTabLayout.setOnTabSelectedListener(position -> {
-            mCurrentTab = position;
-            androidx.fragment.app.Fragment targetFragment;
-            switch (position) {
-                case 0:
-                    targetFragment = mSearchFragment;
-                    break;
-                case 1:
-                    targetFragment = mRecommendFragment;
-                    break;
-                case 2:
-                    targetFragment = mKeepFragment;
-                    break;
-                case 3:
-                    targetFragment = mAllFragment;
-                    break;
-                default:
-                    return;
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("推荐"));
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("收藏"));
+        mBinding.tabLayout.addTab(mBinding.tabLayout.newTab().setText("全部"));
+
+        mBinding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mCurrentTab = tab.getPosition();
+                androidx.fragment.app.Fragment targetFragment;
+                switch (mCurrentTab) {
+                    case 0:
+                        targetFragment = mRecommendFragment;
+                        break;
+                    case 1:
+                        targetFragment = mKeepFragment;
+                        break;
+                    case 2:
+                        targetFragment = mAllFragment;
+                        break;
+                    default:
+                        return;
+                }
+                showFragment(targetFragment);
             }
-            showFragment(targetFragment);
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
         });
+
+        // 设置默认选中推荐标签
+        mBinding.tabLayout.getTabAt(1).view.requestFocus();
+        mBinding.tabLayout.getTabAt(1).select();
+
     }
 
     private void showFragment(androidx.fragment.app.Fragment targetFragment) {

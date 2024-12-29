@@ -114,6 +114,8 @@ public class OKHomeVodFragment extends Fragment implements TypePresenter.OnClick
         mBinding.recycler.setHorizontalSpacing(ResUtil.dp2px(16));
         mBinding.recycler.setRowHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         mBinding.recycler.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(new TypePresenter(this))));
+        mBinding.recycler.setFocusable(true);
+        mBinding.recycler.setFocusableInTouchMode(true);
     }
 
     private List<Class> getTypes(Result result) {
