@@ -28,7 +28,6 @@ import com.fongmi.android.tv.ui.activity.SearchActivity;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.newUI.view.OKHomeTabLayout;
 import com.fongmi.android.tv.newUI.fragment.OKHomeVodFragment;
-import com.fongmi.android.tv.newUI.fragment.OKTestFragment;
 import com.fongmi.android.tv.utils.Notify;
 import com.fongmi.android.tv.utils.Tbs;
 import com.github.catvod.crawler.SpiderDebug;
